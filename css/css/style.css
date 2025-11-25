@@ -115,3 +115,33 @@ a {
     padding: 40px;
     opacity: 0.5;
 }
+#origin-core-chat {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 320px;
+  background: rgba(0,0,0,0.75);
+  border: 1px solid #444;
+  padding: 12px;
+  border-radius: 12px;
+  color: white;
+  font-family: Arial;
+}
+
+#oc-messages {
+  height: 260px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+.oc-input-box {
+  display: flex;
+  gap: 8px;
+}
+
+#oc-input {
+  flex: 1;
+  padding: 6px;
+  border-radius: 6px;
+  border: none;
+}
