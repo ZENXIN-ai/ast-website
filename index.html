@@ -1,240 +1,124 @@
 <!DOCTYPE html>
-<html lang="en"><!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AST — Decentralized AI Token</title>
-    <style.nav-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-nav a {
-    margin-left: 24px;
-    font-size: 16px;
-    font-weight: 500;
-    opacity: 0.8;
-    text-decoration: none;
-    transition: 0.2s;
-}
-
-nav a:hover {
-    opacity: 1;
-}>
-        body {
-            margin: 0;
-            background: #07090F;
-            font-family: Arial, Helvetica, sans-serif;
-            color: white;
-        }
-        <header<header>
-    <div class="nav-container">
-        <div class="logo-container">
-            <img src="/mnt/data/14780D2D-B952-4C07-920B-8172F962D978.jpeg" class="logo-img">
-            <div class="logo-text">AST</div>
-        </div>
-
-        <nav>
-            <a href="#mission">Mission</a>
-            <a href="#token">Tokenomics</a>
-            <a href="#roadmap">Roadmap</a>
-            <a href="#mint">Mint AST</a>
-        </nav>
-    </div>
-</header>>
-    <div class="logo-container">
-        <img src="/mnt/data/14780D2D-B952-4C07-920B-8172F962D978.jpeg" class="logo-img">
-        <div class="logo-text">AST</div>
-    </div>
-</header> {
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255,255,255,0.03);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-        }
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            letter-spacing: 2px;
-        }
-        .hero {
-            text-align: center;
-            padding: 120px 20px;
-        }
-        .hero h1 {
-            font-size: 55px;
-            font-weight: 800;
-            background: linear-gradient(90deg, #00C6FF, #7C2AE8);
-            -webkit-background-clip: text;
-            color: transparent;
-        }
-        .hero p {
-            font-size: 20px;
-            opacity: 0.9;
-            margin-top: 20px;
-        }
-        .button {
-            margin-top: 40px;
-            padding: 15px 35px;
-            font-size: 18px;
-            border-radius: 10px;
-            background: linear-gradient(90deg, #00C6FF, #7C2AE8);
-            border: none;
-            color: white;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .button:hover {
-            transform: scale(1.05);
-        }
-        footer {
-            margin-top: 100px;
-            text-align: center;
-            padding: 30px;
-            opacity: 0.5;
-        }
-    </style.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.logo-img {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    object-fit: cover;
-}
-
-.logo-text {
-    font-size: 26px;
-    font-weight: bold;
-    letter-spacing: 2px;
-}>
+    <link rel="stylesheet" href="css/style.css" />
 </head>
+
 <body>
 
-<header>
-    <div class="logo">AST</div>
+<!-- Navigation -->
+<header class="navbar">
+    <div class="nav-left">
+        <img src="assets/logo.png" class="logo" alt="AST Logo" />
+        <div class="brand">
+            <div class="brand-title">AST</div>
+            <div class="brand-sub">Decentralized AI Token</div>
+        </div>
+    </div>
+
+    <nav class="nav">
+        <a href="#about">About</a>
+        <a href="#tokenomics">Tokenomics</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#contact">Contact</a>
+    </nav>
 </header>
 
+<!-- Hero -->
 <section class="hero">
-    <h1>The Future of AI Rewards</h1>
-    <p>Train your AI. Earn AST.  
-    The decentralized token that rewards your contribution to AI evolution.</p>
+    <div class="hero-left">
+        <h1>The Future of AI Rewards</h1>
+        <p class="lead">
+            Train your AI. Earn AST.  
+            A decentralized token built to reward the evolution of intelligent agents.
+        </p>
 
-    <button class="button">View Documentation</button>
+        <div class="cta">
+            <a class="btn primary" href="#tokenomics">View Tokenomics</a>
+            <a class="btn outline" href="#roadmap">See Roadmap</a>
+        </div>
+    </div>
+
+    <div class="hero-right card">
+        <h4>AST Quick Info</h4>
+        <dl>
+            <dt>Network</dt><dd>Base Sepolia (Testnet)</dd>
+            <dt>Symbol</dt><dd>AST</dd>
+            <dt>Total Supply</dt><dd>1,000,000,000</dd>
+        </dl>
+        <a class="btn small" href="#">View Contract</a>
+    </div>
 </section>
 
-<footer>
-    © 2025 AST — Decentralized AI Token
+<!-- About -->
+<section id="about" class="section card">
+    <h3>What is AST?</h3>
+    <p>
+        AST is a decentralized AI utility token for autonomous agents, data trainers,
+        model contributors, and next-gen AI ecosystems. The future of AI belongs to the people
+        who train it — and AST rewards that contribution.
+    </p>
+
+    <div class="features">
+        <div class="f">
+            <h4>AI Incentives</h4>
+            <p>Earn AST by training or interacting with decentralized AI models.</p>
+        </div>
+
+        <div class="f">
+            <h4>Agent-Powered</h4>
+            <p>Designed for autonomous agents operating on-chain.</p>
+        </div>
+
+        <div class="f">
+            <h4>Scalable & Fast</h4>
+            <p>Built for high-speed interactions and automation.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Tokenomics -->
+<section id="tokenomics" class="section card">
+    <h3>Tokenomics</h3>
+    <ul class="token-list">
+        <li><strong>Total Supply:</strong> 1,000,000,000 AST</li>
+        <li><strong>Initial Allocation:</strong> Owner 100% (Testnet)</li>
+    </ul>
+    <div class="note">
+        Mainnet distribution, vesting, and governance will be finalized later.
+    </div>
+</section>
+
+<!-- Roadmap -->
+<section id="roadmap" class="section card">
+    <h3>Roadmap</h3>
+    <ol>
+        <li>Testnet Token Launch</li>
+        <li>Website + Documentation</li>
+        <li>AI Agent SDK</li>
+        <li>AI Training Rewards System</li>
+        <li>Mainnet Deployment</li>
+    </ol>
+</section>
+
+<!-- Contact -->
+<section id="contact" class="section card">
+    <h3>Contact</h3>
+    <p>Twitter / Discord / Telegram (Coming Soon)</p>
+    <p>Email: <a href="mailto:team@ast.com">team@ast.com</a></p>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    © <span id="year"></span> AST — Decentralized AI Token
 </footer>
 
-</body>
-</html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>AST — The Token for Autonomous AI</title>
-  <meta name="description" content="AST — The Token for Autonomous AI. Empowering the next generation of autonomous AI economies." />
-  <link rel="stylesheet" href="css/style.css" />
-</head>
-<body>
-  <header class="navbar">
-    <div class="nav-left">
-      <img src="assets/logo.png" class="logo" alt="AST logo" />
-      <div class="brand">
-        <div class="brand-title">AST</div>
-        <div class="brand-sub">The Token for Autonomous AI</div>
-      </div>
-    </div>
-    <nav class="nav">
-      <a href="#about">About</a>
-      <a href="#token">Tokenomics</a>
-      <a href="#roadmap">Roadmap</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </header>
+<script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+</script>
 
-  <main>
-    <section class="hero">
-      <div class="hero-left">
-        <h1>AST — The Token for Autonomous AI</h1>
-        <p class="lead">A decentralized currency powering intelligent on-chain agents. Contribute · Learn · Earn.</p>
-        <div class="cta">
-          <a class="btn primary" href="#token">View Tokenomics</a>
-          <a class="btn outline" href="#roadmap">See Roadmap</a>
-        </div>
-      </div>
-      <div class="hero-right card">
-        <h4>Quick info</h4>
-        <dl>
-          <dt>Network</dt><dd>Base Sepolia (testnet)</dd>
-          <dt>Symbol</dt><dd>AST</dd>
-          <dt>Total supply</dt><dd>1,000,000,000</dd>
-        </dl>
-        <a class="btn small" id="view-contract" href="#">View contract</a>
-      </div>
-    </section>
-
-    <section id="about" class="section card">
-      <h3>What is AST?</h3>
-      <p>AST is a next-generation AI utility token built for autonomous agents, AI automation, and intelligent blockchain applications. It enables secure payments between agents, incentives for model training, and governance for AI ecosystems.</p>
-      <div class="features">
-        <div class="f">
-          <h4>On-Chain AI Integration</h4>
-          <p>Plug autonomous agents directly into smart contracts.</p>
-        </div>
-        <div class="f">
-          <h4>Real-Time Automation</h4>
-          <p>Fast interactions to support agent orchestration.</p>
-        </div>
-        <div class="f">
-          <h4>Tokenized Incentives</h4>
-          <p>Reward data providers, model trainers, and contributors.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="token" class="section card">
-      <h3>Tokenomics</h3>
-      <p class="muted">Recommended test allocation for community growth and prototyping.</p>
-      <ul class="token-list">
-        <li><strong>Total supply:</strong> 1,000,000,000 AST</li>
-        <li><strong>Owner (initial):</strong> 100% (testnet)</li>
-      </ul>
-      <div class="note">When ready for mainnet we will finalize distribution, vesting and governance.</div>
-    </section>
-
-    <section id="roadmap" class="section card">
-      <h3>Roadmap</h3>
-      <ol>
-        <li>Testnet launch & website</li>
-        <li>Developer tools & SDK</li>
-        <li>AI agent marketplace</li>
-        <li>Mainnet deployment & community launch</li>
-      </ol>
-    </section>
-
-    <section id="contact" class="section card">
-      <h3>Contact</h3>
-      <p>Join our community: Twitter / Discord / Telegram (links coming soon)</p>
-      <p>Email: <a href="mailto:team@astracoin.example">team@astracoin.example</a></p>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div>© <span id="year"></span> AST — The Token for Autonomous AI</div>
-  </footer>
-
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
 </body>
 </html>
