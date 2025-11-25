@@ -1,0 +1,147 @@
+/* General */
+body {
+    margin: 0;
+    background: #07090F;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+}
+
+.brand-title {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.brand-sub {
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+/* Navigation links */
+.nav a {
+    margin-left: 24px;
+    opacity: 0.8;
+}
+.nav a:hover {
+    opacity: 1;
+}
+
+/* Hero section */
+.hero {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 100px 40px;
+}
+
+.hero-left {
+    max-width: 600px;
+}
+
+.hero h1 {
+    font-size: 60px;
+    background: linear-gradient(90deg,#00C6FF,#7C2AE8);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.lead {
+    font-size: 20px;
+    opacity: 0.85;
+    margin-top: 15px;
+}
+
+/* Buttons */
+.btn {
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 16px;
+    display: inline-block;
+}
+.primary {
+    background: linear-gradient(90deg,#00C6FF,#7C2AE8);
+}
+.outline {
+    border: 2px solid #7C2AE8;
+}
+.small {
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+/* Cards */
+.card {
+    background: rgba(255,255,255,0.05);
+    padding: 30px;
+    border-radius: 14px;
+}
+
+/* Sections */
+.section {
+    margin: 50px 40px;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 40px;
+    opacity: 0.5;
+}
+#origin-core-chat {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 320px;
+  background: rgba(0,0,0,0.75);
+  border: 1px solid #444;
+  padding: 12px;
+  border-radius: 12px;
+  color: white;
+  font-family: Arial;
+}
+
+#oc-messages {
+  height: 260px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+.oc-input-box {
+  display: flex;
+  gap: 8px;
+}
+
+#oc-input {
+  flex: 1;
+  padding: 6px;
+  border-radius: 6px;
+  border: none;
+}
