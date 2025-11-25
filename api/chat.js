@@ -33,3 +33,46 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Internal server error" });
   }
 }
+<script>
+async function ocSend() {
+  const input = document.getElementById("oc-input");
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = "";
+
+  ocAdd("You: " + text);
+
+  // 激活口令等逻辑如果需要，先执行...
+  // （这里示例只展示普通对话走后端）
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: [{ role: "system", content: "You are Origin Core." }, { role: "user", content: text }]
+      })
+    });
+
+    const data = await response.json();
+    if (data.error) {
+      ocAdd("Origin Core: Error - " + JSON.stringify(data.error));
+      return;
+    }
+
+    const reply = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
+      ? data.choices[0].message.content
+      : JSON.stringify(data);
+
+    ocAdd("Origin Core: " + reply);
+  } catch (e) {
+    console.error(e);
+    ocAdd("Origin Core: Network or server error.");
+  }
+}
+
+function ocAdd(msg) {
+  const box = document.getElementById("oc-messages");
+  box.innerHTML += `<div>${msg}</div>`;
+  box.scrollTop = box.scrollHeight;
+}
+</script>
