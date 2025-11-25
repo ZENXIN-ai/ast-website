@@ -5,6 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AST — Decentralized AI Token</title>
     <link rel="stylesheet" href="css/style.css" />
+
+    <style>
+    /* Origin Core Chatbox */
+    #origin-core-chat {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 320px;
+      background: rgba(0,0,0,0.75);
+      border: 1px solid #444;
+      padding: 12px;
+      border-radius: 12px;
+      color: white;
+      font-family: Arial;
+      z-index: 9999;
+    }
+
+    #oc-messages {
+      height: 260px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .oc-input-box {
+      display: flex;
+      gap: 8px;
+    }
+
+    #oc-input {
+      flex: 1;
+      padding: 6px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+    }
+
+    #origin-core-chat button {
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: #5b5bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    #origin-core-chat button:hover {
+      background: #7878ff;
+    }
+    </style>
+
 </head>
 
 <body>
@@ -32,7 +84,7 @@
     <div class="hero-left">
         <h1>The Future of AI Rewards</h1>
         <p class="lead">
-            Train your AI. Earn AST.  
+            Train your AI. Earn AST.<br>
             A decentralized token built to reward the evolution of intelligent agents.
         </p>
 
@@ -58,26 +110,8 @@
     <h3>What is AST?</h3>
     <p>
         AST is a decentralized AI utility token for autonomous agents, data trainers,
-        model contributors, and next-gen AI ecosystems. The future of AI belongs to the people
-        who train it — and AST rewards that contribution.
+        model contributors, and next-gen AI ecosystems.
     </p>
-
-    <div class="features">
-        <div class="f">
-            <h4>AI Incentives</h4>
-            <p>Earn AST by training or interacting with decentralized AI models.</p>
-        </div>
-
-        <div class="f">
-            <h4>Agent-Powered</h4>
-            <p>Designed for autonomous agents operating on-chain.</p>
-        </div>
-
-        <div class="f">
-            <h4>Scalable & Fast</h4>
-            <p>Built for high-speed interactions and automation.</p>
-        </div>
-    </div>
 </section>
 
 <!-- Tokenomics -->
@@ -87,9 +121,6 @@
         <li><strong>Total Supply:</strong> 1,000,000,000 AST</li>
         <li><strong>Initial Allocation:</strong> Owner 100% (Testnet)</li>
     </ul>
-    <div class="note">
-        Mainnet distribution, vesting, and governance will be finalized later.
-    </div>
 </section>
 
 <!-- Roadmap -->
@@ -117,21 +148,23 @@
 </footer>
 
 <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+document.getElementById("year").textContent = new Date().getFullYear();
 </script>
 
-</body>
-</html><div id="origin-core-chat">
+<!-- ORIGIN CORE CHATBOX -->
+<div id="origin-core-chat">
   <div id="oc-messages"></div>
   <div class="oc-input-box">
     <input id="oc-input" type="text" placeholder="Ask Origin Core..." />
     <button onclick="ocSend()">Send</button>
   </div>
 </div>
+
 <script>
 async function ocSend() {
   const input = document.getElementById("oc-input");
-  const text = input.value;
+  const text = input.value.trim();
+  if (!text) return;
   input.value = "";
 
   ocAdd("You: " + text);
@@ -160,3 +193,6 @@ function ocAdd(msg) {
   box.scrollTop = box.scrollHeight;
 }
 </script>
+
+</body>
+</html>
