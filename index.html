@@ -1,26 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AST — Decentralized AI Token</title>
+    <title>AST — 去中心化AI代币</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ===== 通用样式 ===== */
+        /* ===== 全局样式 ===== */
         :root {
             --primary: #5b5bff;
             --primary-dark: #4a4ae6;
+            --primary-light: #7b7bff;
             --secondary: #1a1a2e;
+            --secondary-light: #2a2a3e;
             --accent: #00d4ff;
+            --accent-dark: #00b8e6;
             --text: #f0f0f0;
             --text-light: #b0b0b0;
+            --text-lighter: #888;
             --card-bg: rgba(30, 30, 46, 0.7);
+            --card-bg-solid: #1e1e2e;
             --card-border: rgba(255, 255, 255, 0.1);
             --success: #00d26a;
             --warning: #ff9f43;
             --danger: #ff6b6b;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            --gradient-dark: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.3);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         
         * {
@@ -29,9 +41,13 @@
             box-sizing: border-box;
         }
         
+        html {
+            scroll-behavior: smooth;
+        }
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--gradient-dark);
             color: var(--text);
             line-height: 1.6;
             overflow-x: hidden;
@@ -55,6 +71,7 @@
             top: 0;
             background: rgba(10, 10, 20, 0.9);
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             z-index: 100;
             border-bottom: 1px solid var(--card-border);
         }
@@ -69,12 +86,13 @@
             height: 40px;
             width: 40px;
             border-radius: 10px;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            background: var(--gradient-primary);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
+            box-shadow: var(--shadow);
         }
         
         .brand-title {
@@ -97,7 +115,7 @@
             color: var(--text);
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s;
+            transition: var(--transition);
             position: relative;
         }
         
@@ -120,36 +138,15 @@
             width: 100%;
         }
         
-        /* 隐藏的管理入口 */
-        .admin-access {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 999;
-            opacity: 0.3;
-            transition: opacity 0.3s;
-        }
-        
-        .admin-access:hover {
-            opacity: 1;
-        }
-        
         /* 英雄区域 */
         .hero {
             display: flex;
-            padding: 4rem 2rem;
+            padding: 6rem 2rem;
             max-width: 1200px;
             margin: 0 auto;
             gap: 3rem;
             align-items: center;
+            min-height: 80vh;
         }
         
         .hero-left {
@@ -158,18 +155,18 @@
         
         .hero h1 {
             font-size: 3.5rem;
-            font-weight: 700;
+            font-weight: 800;
             margin-bottom: 1.5rem;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             line-height: 1.2;
         }
         
         .lead {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             color: var(--text-light);
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             line-height: 1.6;
         }
         
@@ -180,11 +177,13 @@
         
         .btn {
             padding: 0.8rem 1.5rem;
-            border-radius: 8px;
+            border-radius: var(--radius-sm);
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s;
+            transition: var(--transition);
             display: inline-block;
+            border: none;
+            cursor: pointer;
         }
         
         .btn.primary {
@@ -218,9 +217,15 @@
             flex: 0 0 300px;
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 12px;
+            border-radius: var(--radius);
             padding: 1.5rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+        }
+        
+        .hero-right:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
         }
         
         .hero-right h4 {
@@ -255,15 +260,15 @@
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 12px;
+            border-radius: var(--radius);
             padding: 2rem;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
         }
         
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow-lg);
         }
         
         h3 {
@@ -355,11 +360,11 @@
             background: rgba(10, 10, 20, 0.95);
             border: 1px solid rgba(124, 42, 232, 0.5);
             padding: 0;
-            border-radius: 12px;
+            border-radius: var(--radius);
             color: white;
             font-family: 'Inter', sans-serif;
             z-index: 1000;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+            box-shadow: var(--shadow-lg);
             backdrop-filter: blur(10px);
             overflow: hidden;
         }
@@ -777,94 +782,87 @@
             <div class="logo">AST</div>
             <div class="brand">
                 <div class="brand-title">AST</div>
-                <div class="brand-sub">Decentralized AI Token</div>
+                <div class="brand-sub">去中心化AI代币</div>
             </div>
         </div>
 
         <nav class="nav">
-            <a href="#about">About</a>
-            <a href="#tokenomics">Tokenomics</a>
-            <a href="#roadmap">Roadmap</a>
-            <a href="#contact">Contact</a>
+            <a href="#about">关于</a>
+            <a href="#tokenomics">代币经济</a>
+            <a href="#roadmap">路线图</a>
+            <a href="#contact">联系我们</a>
         </nav>
     </header>
 
-    <!-- 隐藏的管理入口 -->
-    <div class="admin-access" id="adminAccess" title="Admin Access">
-        ⚙️
-    </div>
-
     <section class="hero">
         <div class="hero-left">
-            <h1>The Future of AI Rewards</h1>
+            <h1>AI奖励的未来</h1>
             <p class="lead">
-                Train your AI. Earn AST.<br>
-                A decentralized token built to reward the evolution of intelligent agents.
+                训练您的AI。赚取AST。<br>
+                一个为奖励智能代理进化而构建的去中心化代币。
             </p>
 
             <div class="cta">
-                <a class="btn primary" href="#tokenomics">View Tokenomics</a>
-                <a class="btn outline" href="#roadmap">See Roadmap</a>
+                <a class="btn primary" href="#tokenomics">查看代币经济</a>
+                <a class="btn outline" href="#roadmap">查看路线图</a>
             </div>
         </div>
 
         <div class="hero-right card">
-            <h4>AST Quick Info</h4>
+            <h4>AST 快速信息</h4>
             <dl>
-                <dt>Network</dt><dd>Base Sepolia (Testnet)</dd>
-                <dt>Symbol</dt><dd>AST</dd>
-                <dt>Total Supply</dt><dd>1,000,000,000</dd>
+                <dt>网络</dt><dd>Base Sepolia (测试网)</dd>
+                <dt>符号</dt><dd>AST</dd>
+                <dt>总供应量</dt><dd>1,000,000,000</dd>
             </dl>
-            <a class="btn small outline" href="#">View Contract</a>
+            <a class="btn small outline" href="#">查看合约</a>
         </div>
     </section>
 
     <section id="about" class="section card">
-        <h3>What is AST?</h3>
+        <h3>什么是AST?</h3>
         <p>
-            AST is a decentralized AI utility token for autonomous agents, data trainers,
-            model contributors, and next-gen AI ecosystems.
+            AST是一个面向自主代理、数据训练师、模型贡献者和下一代AI生态系统的去中心化AI实用代币。
         </p>
         <p>
-            Our mission is to create a sustainable economy where AI developers and contributors 
-            are fairly rewarded for their efforts in advancing artificial intelligence.
+            我们的使命是创建一个可持续的经济体系，让AI开发者和贡献者在推进人工智能方面获得公平的回报。
         </p>
     </section>
 
     <section id="tokenomics" class="section card">
-        <h3>Tokenomics</h3>
+        <h3>代币经济</h3>
         <ul class="token-list">
-            <li><strong>Total Supply:</strong> 1,000,000,000 AST</li>
-            <li><strong>Initial Allocation:</strong> Owner 100% (Testnet)</li>
-            <li><strong>AI Training Rewards:</strong> 40%</li>
-            <li><strong>Ecosystem Development:</strong> 25%</li>
-            <li><strong>Team & Advisors:</strong> 15%</li>
-            <li><strong>Community & Marketing:</strong> 10%</li>
-            <li><strong>Liquidity Pool:</strong> 10%</li>
+            <li><strong>总供应量:</strong> 1,000,000,000 AST</li>
+            <li><strong>初始分配:</strong> 所有者 100% (测试网)</li>
+            <li><strong>AI训练奖励:</strong> 40%</li>
+            <li><strong>生态系统发展:</strong> 25%</li>
+            <li><strong>团队与顾问:</strong> 15%</li>
+            <li><strong>社区与市场:</strong> 10%</li>
+            <li><strong>流动性池:</strong> 10%</li>
         </ul>
     </section>
 
     <section id="roadmap" class="section card">
-        <h3>Roadmap</h3>
+        <h3>路线图</h3>
         <ol>
-            <li>Testnet Token Launch</li>
-            <li>Website + Documentation</li>
-            <li>AI Agent SDK</li>
-            <li>AI Training Rewards System</li>
-            <li>Mainnet Deployment</li>
-            <li>Partnerships with AI Projects</li>
-            <li>Governance Implementation</li>
+            <li>测试网代币发布</li>
+            <li>网站 + 文档</li>
+            <li>AI代理SDK</li>
+            <li>AI训练奖励系统</li>
+            <li>主网部署</li>
+            <li>与AI项目合作</li>
+            <li>治理实施</li>
         </ol>
     </section>
 
     <section id="contact" class="section card">
-        <h3>Contact</h3>
-        <p>Twitter / Discord / Telegram (Coming Soon)</p>
-        <p>Email: <a href="mailto:team@ast.com">team@ast.com</a></p>
+        <h3>联系我们</h3>
+        <p>Twitter / Discord / Telegram (即将推出)</p>
+        <p>邮箱: <a href="mailto:team@ast.com">team@ast.com</a></p>
     </section>
 
     <footer class="footer">
-        © <span id="year"></span> AST — Decentralized AI Token
+        © <span id="year"></span> AST — 去中心化AI代币
     </footer>
 
     <!-- 聊天框 -->
@@ -875,8 +873,8 @@
         </div>
         <div id="oc-messages"></div>
         <div class="oc-input-box">
-            <input id="oc-input" type="text" placeholder="Ask about AST token..." />
-            <button id="oc-send">Send</button>
+            <input id="oc-input" type="text" placeholder="询问关于AST代币..." />
+            <button id="oc-send">发送</button>
         </div>
     </div>
 
@@ -884,16 +882,16 @@
     <div id="admin-panel">
         <div class="admin-container">
             <div class="admin-header">
-                <h1 class="admin-title">AST Admin Dashboard</h1>
-                <div id="currentTime">Loading...</div>
-                <button class="admin-close" id="adminClose">Close Admin</button>
+                <h1 class="admin-title">AST 管理面板</h1>
+                <div id="currentTime">加载中...</div>
+                <button class="admin-close" id="adminClose">关闭管理面板</button>
             </div>
             
             <div class="admin-nav">
-                <button class="admin-nav-btn active" data-section="overview">Overview</button>
-                <button class="admin-nav-btn" data-section="tokenManagement">Token Management</button>
-                <button class="admin-nav-btn" data-section="aiAnalytics">AI Analytics</button>
-                <button class="admin-nav-btn" data-section="communityData">Community Data</button>
+                <button class="admin-nav-btn active" data-section="overview">概览</button>
+                <button class="admin-nav-btn" data-section="tokenManagement">代币管理</button>
+                <button class="admin-nav-btn" data-section="aiAnalytics">AI分析</button>
+                <button class="admin-nav-btn" data-section="communityData">社区数据</button>
             </div>
             
             <!-- 概览部分 -->
@@ -901,35 +899,35 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-value">1,234</div>
-                        <div class="stat-label">Active Users</div>
+                        <div class="stat-label">活跃用户</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value">567,890</div>
-                        <div class="stat-label">AST Tokens Distributed</div>
+                        <div class="stat-label">已分发AST代币</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value">45.6%</div>
-                        <div class="stat-label">User Growth (30d)</div>
+                        <div class="stat-label">用户增长(30天)</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value">12.3M</div>
-                        <div class="stat-label">Total AST Supply</div>
+                        <div class="stat-label">AST总供应量</div>
                     </div>
                 </div>
                 
                 <div class="admin-card">
-                    <h3 class="admin-card-title">User Activity Trends</h3>
+                    <h3 class="admin-card-title">用户活动趋势</h3>
                     <div class="chart-placeholder">
-                        User Activity Chart - Would display here with Chart.js
+                        用户活动图表 - 将使用Chart.js显示
                     </div>
                 </div>
                 
                 <div class="admin-card">
-                    <h3 class="admin-card-title">AI System Insights</h3>
+                    <h3 class="admin-card-title">AI系统洞察</h3>
                     <div class="form-group">
-                        <p>Analysis shows 68% increase in user participation after implementing the new training reward system.</p>
-                        <p>Current airdrop mechanism shows 92% efficiency.</p>
-                        <p>Detected unusual trading patterns. Recommend monitoring large wallet movements.</p>
+                        <p>分析显示实施新训练奖励系统后用户参与度增加了68%。</p>
+                        <p>当前空投机制显示92%的效率。</p>
+                        <p>检测到异常交易模式。建议监控大额钱包动向。</p>
                     </div>
                 </div>
             </div>
@@ -937,44 +935,44 @@
             <!-- 代币管理部分 -->
             <div id="tokenManagement" class="admin-section">
                 <div class="admin-card">
-                    <h3 class="admin-card-title">Issue New Tokens</h3>
+                    <h3 class="admin-card-title">发行新代币</h3>
                     <div class="form-group">
-                        <label class="form-label">Amount to issue</label>
+                        <label class="form-label">发行数量</label>
                         <input type="number" class="form-input" id="issueAmount">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Recipient address</label>
+                        <label class="form-label">接收地址</label>
                         <input type="text" class="form-input" id="issueRecipient">
                     </div>
-                    <button class="form-btn btn-primary" id="issueBtn">Issue Tokens</button>
+                    <button class="form-btn btn-primary" id="issueBtn">发行代币</button>
                 </div>
                 
                 <div class="admin-card">
-                    <h3 class="admin-card-title">Airdrop Tokens</h3>
+                    <h3 class="admin-card-title">空投代币</h3>
                     <div class="form-group">
-                        <label class="form-label">Amount per user</label>
+                        <label class="form-label">每个用户数量</label>
                         <input type="number" class="form-input" id="airdropAmount">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Number of recipients</label>
+                        <label class="form-label">接收者数量</label>
                         <input type="number" class="form-input" id="airdropCount">
                     </div>
-                    <button class="form-btn btn-success" id="airdropBtn">Execute Airdrop</button>
+                    <button class="form-btn btn-success" id="airdropBtn">执行空投</button>
                 </div>
                 
                 <div class="admin-card">
-                    <h3 class="admin-card-title">Burn Tokens</h3>
+                    <h3 class="admin-card-title">销毁代币</h3>
                     <div class="form-group">
-                        <label class="form-label">Amount to burn</label>
+                        <label class="form-label">销毁数量</label>
                         <input type="number" class="form-input" id="burnAmount">
                     </div>
-                    <button class="form-btn btn-danger" id="burnBtn">Burn Tokens</button>
+                    <button class="form-btn btn-danger" id="burnBtn">销毁代币</button>
                 </div>
                 
                 <div class="admin-card">
-                    <h3 class="admin-card-title">Token Supply Distribution</h3>
+                    <h3 class="admin-card-title">代币供应分布</h3>
                     <div class="chart-placeholder">
-                        Token Distribution Chart - Would display here with Chart.js
+                        代币分布图表 - 将使用Chart.js显示
                     </div>
                 </div>
             </div>
@@ -984,42 +982,42 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-value">98.7%</div>
-                        <div class="stat-label">AI Response Accuracy</div>
+                        <div class="stat-label">AI响应准确率</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value">3.2s</div>
-                        <div class="stat-label">Avg Response Time</div>
+                        <div class="stat-label">平均响应时间</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value">12,456</div>
-                        <div class="stat-label">Daily Interactions</div>
+                        <div class="stat-label">每日交互次数</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value">87%</div>
-                        <div class="stat-label">User Satisfaction</div>
+                        <div class="stat-label">用户满意度</div>
                     </div>
                 </div>
                 
                 <div class="admin-card">
-                    <h3 class="admin-card-title">AI Learning Progress</h3>
+                    <h3 class="admin-card-title">AI学习进度</h3>
                     <div class="chart-placeholder">
-                        AI Learning Chart - Would display here with Chart.js
+                        AI学习图表 - 将使用Chart.js显示
                     </div>
                 </div>
                 
                 <div class="admin-card">
-                    <h3 class="admin-card-title">User Query Categories</h3>
+                    <h3 class="admin-card-title">用户查询类别</h3>
                     <div class="chart-placeholder">
-                        Query Categories Chart - Would display here with Chart.js
+                        查询类别图表 - 将使用Chart.js显示
                     </div>
                 </div>
                 
                 <div class="admin-card">
-                    <h3 class="admin-card-title">AI Self-Assessment</h3>
+                    <h3 class="admin-card-title">AI自我评估</h3>
                     <div class="form-group">
-                        <p>Current learning rate: 0.87. Training data quality: 92%.</p>
-                        <p>AI interactions have increased user retention by 34%.</p>
-                        <p>Most valuable feature: personalized training recommendations.</p>
+                        <p>当前学习率: 0.87。训练数据质量: 92%。</p>
+                        <p>AI交互使用户留存率增加了34%。</p>
+                        <p>最有价值的功能: 个性化训练推荐。</p>
                     </div>
                 </div>
             </div>
@@ -1029,38 +1027,38 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-value">24.5K</div>
-                        <div class="stat-label">Total Community Members</div>
+                        <div class="stat-label">社区成员总数</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value">3.2K</div>
-                        <div class="stat-label">Active Contributors</div>
+                        <div class="stat-label">活跃贡献者</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value">156</div>
-                        <div class="stat-label">Countries Represented</div>
+                        <div class="stat-label">代表国家</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value">42%</div>
-                        <div class="stat-label">Female Participants</div>
+                        <div class="stat-label">女性参与者</div>
                     </div>
                 </div>
                 
                 <div class="admin-card">
-                    <h3 class="admin-card-title">Community Growth</h3>
+                    <h3 class="admin-card-title">社区增长</h3>
                     <div class="chart-placeholder">
-                        Community Growth Chart - Would display here with Chart.js
+                        社区增长图表 - 将使用Chart.js显示
                     </div>
                 </div>
                 
                 <div class="admin-card">
-                    <h3 class="admin-card-title">Top Contributors</h3>
+                    <h3 class="admin-card-title">顶级贡献者</h3>
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Rank</th>
-                                <th>Username</th>
-                                <th>Contributions</th>
-                                <th>Tokens Earned</th>
+                                <th>排名</th>
+                                <th>用户名</th>
+                                <th>贡献</th>
+                                <th>赚取代币</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1110,7 +1108,7 @@
         // ===== 聊天系统 =====
         class OriginCoreChat {
             constructor() {
-                this.isOnline = false;
+                this.isOnline = true; // AI默认激活，无需激活命令
                 this.messageHistory = [];
                 this.init();
             }
@@ -1118,8 +1116,9 @@
             init() {
                 this.bindEvents();
                 
+                // 直接显示在线消息，无需激活
                 setTimeout(() => {
-                    this.addMessage("Origin Core", "AST Origin Core initialized. Type 'ast-origin-core:awaken' to activate.");
+                    this.addMessage("Origin Core", "AST Origin Core 已在线。请问您需要什么帮助？", "bot-message");
                 }, 1000);
             }
 
@@ -1155,11 +1154,14 @@
                 inputField.value = '';
                 sendButton.disabled = true;
 
-                this.addMessage('You', message, 'user-message');
+                this.addMessage('您', message, 'user-message');
 
-                if (message.toLowerCase() === 'ast-origin-core:awaken') {
-                    this.isOnline = true;
-                    this.addMessage('Origin Core', 'Systems online. AST Origin Core activated. How can I assist you?', 'bot-message');
+                // 检查是否为管理面板激活命令
+                if (message === "AST-Origin-Core:Awaken") {
+                    this.addMessage('Origin Core', '系统管理员权限已激活。正在打开管理面板...', 'bot-message');
+                    // 显示管理面板
+                    document.getElementById('admin-panel').style.display = 'block';
+                    updateAdminTime();
                     sendButton.disabled = false;
                     return;
                 }
@@ -1169,12 +1171,9 @@
                 setTimeout(() => {
                     this.hideTypingIndicator();
                     
-                    if (!this.isOnline) {
-                        this.addMessage('Origin Core', 'System offline. Use "ast-origin-core:awaken" to activate.', 'bot-message');
-                    } else {
-                        const response = this.generateResponse(message);
-                        this.addMessage('Origin Core', response, 'bot-message');
-                    }
+                    // 直接生成响应，无需检查是否在线
+                    const response = this.generateResponse(message);
+                    this.addMessage('Origin Core', response, 'bot-message');
                     
                     sendButton.disabled = false;
                     inputField.focus();
@@ -1184,43 +1183,43 @@
             generateResponse(message) {
                 const lowerMessage = message.toLowerCase();
                 
-                if (lowerMessage.includes('token') || lowerMessage.includes('ast')) {
-                    return "AST is a decentralized AI utility token designed to reward contributions to AI training and development. Total supply is 1,000,000,000 tokens.";
+                if (lowerMessage.includes('代币') || lowerMessage.includes('ast')) {
+                    return "AST是一个去中心化AI实用代币，旨在奖励AI训练和开发的贡献。总供应量为1,000,000,000个代币。";
                 }
                 
-                if (lowerMessage.includes('supply') || lowerMessage.includes('total')) {
-                    return "The total supply of AST tokens is 1,000,000,000. Initial allocation is 100% to the owner during testnet phase.";
+                if (lowerMessage.includes('供应') || lowerMessage.includes('总量')) {
+                    return "AST代币的总供应量为1,000,000,000。测试网阶段的初始分配为100%归所有者所有。";
                 }
                 
-                if (lowerMessage.includes('network') || lowerMessage.includes('blockchain')) {
-                    return "AST is currently deployed on Base Sepolia testnet. Mainnet deployment is planned for Q4 2024.";
+                if (lowerMessage.includes('网络') || lowerMessage.includes('区块链')) {
+                    return "AST目前部署在Base Sepolia测试网上。主网部署计划于2024年第四季度进行。";
                 }
                 
-                if (lowerMessage.includes('tokenomics') || lowerMessage.includes('distribution')) {
-                    return "Token allocation: 40% AI Training Rewards, 25% Ecosystem Development, 15% Team & Advisors, 10% Community & Marketing, 10% Liquidity Pool.";
+                if (lowerMessage.includes('代币经济') || lowerMessage.includes('分配')) {
+                    return "代币分配: 40% AI训练奖励, 25% 生态系统发展, 15% 团队与顾问, 10% 社区与市场, 10% 流动性池。";
                 }
                 
-                if (lowerMessage.includes('roadmap') || lowerMessage.includes('plan')) {
-                    return "Roadmap: 1) Testnet Launch 2) Website + Docs 3) AI Agent SDK 4) Training Rewards System 5) Mainnet Deployment 6) Partnerships 7) Governance";
+                if (lowerMessage.includes('路线图') || lowerMessage.includes('计划')) {
+                    return "路线图: 1) 测试网启动 2) 网站+文档 3) AI代理SDK 4) 训练奖励系统 5) 主网部署 6) 合作伙伴 7) 治理实施";
                 }
                 
-                if (lowerMessage.includes('train') || lowerMessage.includes('ai') || lowerMessage.includes('model')) {
-                    return "The AST ecosystem rewards users for contributing to AI training through data provision, model validation, and computational resources.";
+                if (lowerMessage.includes('训练') || lowerMessage.includes('ai') || lowerMessage.includes('模型')) {
+                    return "AST生态系统通过数据提供、模型验证和计算资源奖励用户对AI训练的贡献。";
                 }
                 
-                if (lowerMessage.includes('contact') || lowerMessage.includes('email') || lowerMessage.includes('support')) {
-                    return "Contact the AST team at team@ast.com. Social channels (Twitter, Discord, Telegram) are coming soon.";
+                if (lowerMessage.includes('联系') || lowerMessage.includes('邮箱') || lowerMessage.includes('支持')) {
+                    return "联系AST团队: team@ast.com。社交媒体渠道(Twitter, Discord, Telegram)即将推出。";
                 }
                 
-                if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
-                    return "Hello! I'm AST Origin Core, your guide to the AST decentralized AI token ecosystem. How can I help you today?";
+                if (lowerMessage.includes('你好') || lowerMessage.includes('嗨') || lowerMessage.includes('您好')) {
+                    return "您好！我是AST Origin Core，您的AST去中心化AI代币生态系统指南。今天我能为您提供什么帮助？";
                 }
                 
                 const defaultResponses = [
-                    "I'm not sure I understand. Could you rephrase your question about AST token?",
-                    "I specialize in AST token information. Try asking about tokenomics, roadmap, or AI training rewards.",
-                    "For detailed information about AST, please refer to our documentation or ask me specific questions about the token.",
-                    "I'm here to help with AST token queries. What would you like to know about our decentralized AI ecosystem?"
+                    "我不太明白。您能重新表述关于AST代币的问题吗？",
+                    "我专门提供AST代币信息。尝试询问代币经济、路线图或AI训练奖励。",
+                    "有关AST的详细信息，请参阅我们的文档或向我询问有关代币的具体问题。",
+                    "我在这里帮助解决AST代币查询。您想了解我们去中心化AI生态系统的哪些方面？"
                 ];
                 
                 return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
@@ -1256,7 +1255,7 @@
                 typingElement.id = 'typing-indicator';
                 typingElement.className = 'typing-indicator';
                 typingElement.innerHTML = `
-                    Origin Core is typing
+                    Origin Core 正在输入
                     <div class="typing-dot"></div>
                     <div class="typing-dot"></div>
                     <div class="typing-dot"></div>
@@ -1288,17 +1287,6 @@
 
         // ===== 管理面板功能 =====
         
-        // 管理面板访问
-        document.getElementById('adminAccess').addEventListener('click', function() {
-            const password = prompt("Enter Admin Password:");
-            if (password === "AST2024Admin") {
-                document.getElementById('admin-panel').style.display = 'block';
-                updateAdminTime();
-            } else {
-                alert("Incorrect password");
-            }
-        });
-        
         // 关闭管理面板
         document.getElementById('adminClose').addEventListener('click', function() {
             document.getElementById('admin-panel').style.display = 'none';
@@ -1307,7 +1295,7 @@
         // 更新管理面板时间
         function updateAdminTime() {
             const now = new Date();
-            document.getElementById('currentTime').textContent = now.toLocaleString();
+            document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN');
         }
         
         setInterval(updateAdminTime, 1000);
@@ -1334,9 +1322,10 @@
             const recipient = document.getElementById('issueRecipient').value;
             
             if (amount && recipient) {
-                alert(`Issuing ${amount} AST tokens to ${recipient}`);
+                alert(`向 ${recipient} 发行 ${amount} AST代币`);
+                // 这里应该是实际的代币发行逻辑
             } else {
-                alert('Please fill in all fields');
+                alert('请填写所有字段');
             }
         });
         
@@ -1345,9 +1334,10 @@
             const count = document.getElementById('airdropCount').value;
             
             if (amount && count) {
-                alert(`Executing airdrop of ${amount} AST tokens to ${count} users`);
+                alert(`向 ${count} 个用户执行空投，每个用户 ${amount} AST代币`);
+                // 这里应该是实际的空投逻辑
             } else {
-                alert('Please fill in all fields');
+                alert('请填写所有字段');
             }
         });
         
@@ -1355,11 +1345,12 @@
             const amount = document.getElementById('burnAmount').value;
             
             if (amount) {
-                if (confirm(`Are you sure you want to burn ${amount} AST tokens? This action cannot be undone.`)) {
-                    alert(`Burning ${amount} AST tokens`);
+                if (confirm(`您确定要销毁 ${amount} 个AST代币吗？此操作无法撤销。`)) {
+                    alert(`销毁 ${amount} 个AST代币`);
+                    // 这里应该是实际的代币销毁逻辑
                 }
             } else {
-                alert('Please enter an amount');
+                alert('请输入数量');
             }
         });
         
