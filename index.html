@@ -169,6 +169,13 @@ async function ocSend() {
 
   ocAdd("You: " + text);
 
+  // --- 🔥 激活口令检测 ---
+  if (text === "ast-origin-core:Awaken") {
+    ocAdd("Origin Core: Online. Awaiting directives.");
+    return;
+  }
+
+  // --- 🔥 普通对话（走 OpenAI API） ---
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
