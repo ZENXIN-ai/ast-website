@@ -1,348 +1,1026 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>AST — 去中心化AI代币</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  /* 精简 + 升级的主题变量 */
-  :root{
-    --bg-main:#060712;
-    --bg-grad: linear-gradient(135deg,#0b0f1a 0%, #0f1724 100%);
-    --card:#0f1620cc;
-    --glass: rgba(255,255,255,0.03);
-    --accent:#00f6ff;
-    --neon-grad: linear-gradient(90deg,#00f6ff,#4df1ff,#dffaff);
-    --text:#e8eef6;
-    --muted: rgba(232,238,246,0.6);
-    --radius:12px;
-    --transition: all .22s cubic-bezier(.2,.9,.3,1);
-  }
-
-  html,body{height:100%;margin:0;font-family:Inter, "PingFang SC", "Microsoft YaHei", sans-serif;background:var(--bg-grad);color:var(--text);-webkit-font-smoothing:antialiased;}
-
-  /* container */
-  .wrap{max-width:1200px;margin:0 auto;padding:28px;}
-
-  header.navbar{display:flex;align-items:center;justify-content:space-between;padding:18px;border-radius:10px;}
-  .brand{display:flex;gap:14px;align-items:center}
-  .logo{width:48px;height:48px;border-radius:10px;background:var(--neon-grad);display:flex;align-items:center;justify-content:center;color:#001; font-weight:700;box-shadow:0 8px 30px rgba(0,246,255,0.06)}
-  .brand-title{font-size:20px;color:var(--accent);font-weight:700}
-  .nav{display:flex;gap:18px;align-items:center}
-  .nav a{color:var(--muted);text-decoration:none;font-weight:500}
-  .nav a:hover{color:var(--accent)}
-
-  .hero{display:flex;gap:28px;align-items:center;margin-top:18px}
-  .hero-left{flex:1}
-  h1{font-size:44px;margin:0 0 12px 0;background:var(--neon-grad);-webkit-background-clip:text;color:transparent;font-weight:800;line-height:1.05}
-  .lead{color:var(--muted);font-size:16px;margin-bottom:18px}
-
-  .cta{display:flex;gap:12px}
-  .btn{padding:10px 16px;border-radius:10px;border:none;cursor:pointer;font-weight:700;transition:var(--transition)}
-  .btn.primary{background:linear-gradient(90deg,#5b5bff,#00d4ff);color:#001}
-  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-
-  /* right card */
-  .hero-right{width:320px;background:var(--card);border-radius:14px;padding:18px;box-shadow:0 12px 30px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.03)}
-  .hero-right dl{display:grid;grid-template-columns:1fr 1fr;gap:6px;color:var(--muted)}
-
-  /* sections */
-  .section{margin-top:22px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.02);}
-
-  /* CHAT UI */
-  #origin-core-chat{
-    position:fixed;right:20px;bottom:20px;width:360px;border-radius:14px;background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter: blur(8px);
-    border:1px solid rgba(0,246,255,0.06);box-shadow:0 30px 60px rgba(2,6,23,0.6);overflow:hidden;z-index:1000;
-  }
-  .oc-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.02)}
-  .oc-header h4{margin:0;color:var(--accent);font-size:14px}
-  #oc-messages{height:320px;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
-  .message{max-width:78%;padding:10px 12px;border-radius:12px;line-height:1.35;word-break:break-word;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
-  .user-message{margin-left:auto;background:linear-gradient(180deg,#06121a,#07202a);border:1px solid rgba(0,198,255,0.06)}
-  .bot-message{margin-right:auto;background:linear-gradient(180deg,#0d1230,#0b1530);border:1px solid rgba(124,42,232,0.06)}
-  .message-sender{font-size:11px;color:var(--muted);margin-bottom:6px}
-  .oc-input-box{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(255,255,255,0.02)}
-  #oc-input{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);outline:none}
-  #oc-send{padding:10px 12px;border-radius:10px;background:linear-gradient(90deg,#00f6ff,#7c2ae8);border:none;color:#001;font-weight:700;cursor:pointer}
-
-  .typing-indicator{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px}
-  .typing-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:.6;animation:typing 1.2s infinite;}
-
-  @keyframes typing{0%{transform:scale(1);opacity:.4}50%{transform:scale(1.3);opacity:1}100%{transform:scale(1);opacity:.4}}
-
-  /* admin panel (overlay) */
-  #admin-panel{display:none;position:fixed;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.7));z-index:2000;align-items:center;justify-content:center;padding:28px}
-  .admin-card{max-width:1000px;width:100%;background:rgba(255,255,255,0.02);border-radius:14px;padding:26px;border:1px solid rgba(0,246,255,0.05);box-shadow:0 30px 80px rgba(0,0,0,0.6)}
-
-  /* responsive */
-  @media (max-width:900px){.hero{flex-direction:column}.hero-right{width:100%}}
-  @media (max-width:480px){#origin-core-chat{width:calc(100% - 32px);right:16px;bottom:16px}}
-</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AST — 世界首个成长驱动型AI治理加密社区</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ===== 全局样式 ===== */
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #0f0f23;
+            --secondary-light: #1a1a2e;
+            --accent: #06d6a0;
+            --accent-dark: #05c48f;
+            --accent-light: #7ee7c2;
+            --text: #f8fafc;
+            --text-light: #cbd5e1;
+            --text-lighter: #94a3b8;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-bg-solid: #1e293b;
+            --card-border: rgba(99, 102, 241, 0.2);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            --gradient-dark: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 20px rgba(6, 214, 160, 0.3);
+            --radius: 16px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--gradient-dark);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        /* ===== 主网站样式 ===== */
+        
+        /* 导航栏 */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 100;
+            border-bottom: 1px solid var(--card-border);
+        }
+        
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo {
+            height: 40px;
+            width: 40px;
+            border-radius: 10px;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: var(--shadow);
+        }
+        
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .brand-sub {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+        
+        .nav {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav a:hover {
+            color: var(--accent);
+        }
+        
+        .nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s;
+        }
+        
+        .nav a:hover::after {
+            width: 100%;
+        }
+        
+        /* 英雄区域 */
+        .hero {
+            display: flex;
+            padding: 8rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 4rem;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .hero-left {
+            flex: 1;
+        }
+        
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+        
+        .hero-highlight {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .hero-highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-accent);
+            border-radius: 2px;
+        }
+        
+        .lead {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+        
+        .usp-tagline {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-bottom: 3rem;
+            font-weight: 600;
+        }
+        
+        .cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn.primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+        
+        .btn.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn.outline {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+        
+        .btn.outline:hover {
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .btn.accent {
+            background: var(--gradient-accent);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+        
+        .btn.accent:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(6, 214, 160, 0.4);
+        }
+        
+        .hero-right {
+            flex: 0 0 400px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+        
+        .hero-right:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), var(--shadow-glow);
+        }
+        
+        .hero-right h4 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            text-align: center;
+        }
+        
+        .feature-list {
+            list-style: none;
+        }
+        
+        .feature-list li {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--gradient-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .feature-icon svg {
+            width: 12px;
+            height: 12px;
+            fill: white;
+        }
+        
+        .feature-text {
+            flex: 1;
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .feature-desc {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        /* 核心优势部分 */
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6rem 2rem;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .section-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .usp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .usp-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+        }
+        
+        .usp-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), var(--shadow-glow);
+            border-color: rgba(6, 214, 160, 0.3);
+        }
+        
+        .usp-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .usp-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        
+        .usp-desc {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        
+        /* 代币经济学 */
+        .tokenomics-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        
+        .tokenomics-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .token-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .token-card h4 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .token-list {
+            list-style: none;
+        }
+        
+        .token-list li {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .token-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .token-value {
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .chart-placeholder {
+            height: 300px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-style: italic;
+        }
+        
+        /* 路线图 */
+        .roadmap-container {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .roadmap-line {
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--gradient-accent);
+            z-index: 1;
+        }
+        
+        .roadmap-items {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .roadmap-item {
+            display: flex;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        
+        .roadmap-marker {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+            margin-right: 2rem;
+            box-shadow: var(--shadow);
+            z-index: 3;
+        }
+        
+        .roadmap-content {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            flex: 1;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .roadmap-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .roadmap-phase {
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .roadmap-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .roadmap-desc {
+            color: var(--text-light);
+        }
+        
+        /* 社区部分 */
+        .community-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+        
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-light);
+            border-top: 1px solid var(--card-border);
+            margin-top: 2rem;
+            background: rgba(15, 15, 35, 0.5);
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+        
+        .copyright {
+            font-size: 0.9rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .hero {
+                flex-direction: column;
+                padding: 4rem 2rem;
+            }
+            
+            .hero h1 {
+                font-size: 3rem;
+            }
+            
+            .hero-right {
+                width: 100%;
+                max-width: 500px;
+            }
+            
+            .tokenomics-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .lead {
+                font-size: 1.2rem;
+            }
+            
+            .section {
+                padding: 4rem 1rem;
+            }
+            
+            .section-title {
+                font-size: 2.5rem;
+            }
+            
+            .usp-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .community-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .community-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .roadmap-marker {
+                width: 50px;
+                height: 50px;
+                margin-right: 1rem;
+            }
+            
+            .roadmap-content {
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
+
 <body>
-  <div class="wrap">
+    <!-- 主网站内容 -->
     <header class="navbar">
-      <div class="brand">
-        <div class="logo">AST</div>
-        <div>
-          <div class="brand-title">AST</div>
-          <div class="brand-sub" style="color:var(--muted);font-size:13px">去中心化AI代币</div>
+        <div class="nav-left">
+            <div class="logo">AST</div>
+            <div class="brand">
+                <div class="brand-title">AST</div>
+                <div class="brand-sub">AI治理加密社区</div>
+            </div>
         </div>
-      </div>
-      <nav class="nav">
-        <a href="#about">关于</a>
-        <a href="#tokenomics">代币经济</a>
-        <a href="#roadmap">路线图</a>
-        <a href="#contact">联系我们</a>
-      </nav>
+
+        <nav class="nav">
+            <a href="#usp">核心优势</a>
+            <a href="#tokenomics">代币经济</a>
+            <a href="#roadmap">发展路线</a>
+            <a href="#community">加入社区</a>
+        </nav>
     </header>
 
     <section class="hero">
-      <div class="hero-left">
-        <h1>AI奖励的未来</h1>
-        <p class="lead">训练您的AI。赚取AST。一个为奖励智能代理进化而构建的去中心化代币。</p>
-        <div class="cta">
-          <a class="btn primary" href="#tokenomics">查看代币经济</a>
-          <a class="btn ghost" href="#roadmap">查看路线图</a>
+        <div class="hero-left">
+            <h1>
+                世界首个<br>
+                <span class="hero-highlight">成长驱动型</span><br>
+                AI治理加密社区
+            </h1>
+            <p class="lead">
+                AST是一个围绕自我进化AI系统构建的新一代治理代币。<br>
+                社区培育AI，AI发展社区——创造独特的自我强化经济引擎。
+            </p>
+            <p class="usp-tagline">
+                🤖 社区越活跃 → AI越聪明 → 代币越有价值
+            </p>
+            <div class="cta">
+                <a class="btn primary" href="#usp">探索核心优势</a>
+                <a class="btn accent" href="#community">加入社区</a>
+                <a class="btn outline" href="#tokenomics">了解代币经济</a>
+            </div>
         </div>
-      </div>
 
-      <aside class="hero-right">
-        <h4 style="margin:0 0 8px 0;color:var(--accent)">AST 快速信息</h4>
-        <dl>
-          <dt style="color:var(--muted)">网络</dt><dd>Base Sepolia (测试网)</dd>
-          <dt style="color:var(--muted)">符号</dt><dd>AST</dd>
-          <dt style="color:var(--muted)">总供应量</dt><dd>1,000,000,000</dd>
-        </dl>
-        <div style="margin-top:12px">
-          <button class="btn ghost" id="open-admin-from-card">管理员</button>
+        <div class="hero-right">
+            <h4>为什么AST独一无二？</h4>
+            <ul class="feature-list">
+                <li>
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="feature-text">
+                        <div class="feature-title">可成长型AI治理</div>
+                        <div class="feature-desc">社区行为训练AI，AI优化社区决策</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div class="feature-text">
+                        <div class="feature-title">真实效用代币</div>
+                        <div class="feature-desc">AI服务、治理、贡献奖励等多重用途</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                    <div class="feature-text">
+                        <div class="feature-title">AI管理DAO金库</div>
+                        <div class="feature-desc">智能分配策略，提高透明度和效率</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <div class="feature-text">
+                        <div class="feature-title">贡献导向的权益</div>
+                        <div class="feature-desc">贡献越多，AI权重和奖励越高</div>
+                    </div>
+                </li>
+            </ul>
         </div>
-      </aside>
     </section>
 
-    <section id="about" class="section"><h3 style="margin-top:0;color:var(--accent)">什么是AST?</h3>
-      <p style="color:var(--muted)">AST是一个面向自主代理、数据训练师、模型贡献者和下一代AI生态系统的去中心化AI实用代币。</p>
+    <section id="usp" class="section">
+        <div class="section-header">
+            <h2 class="section-title">核心优势</h2>
+            <p class="section-subtitle">AST重新定义了去中心化治理，将AI从工具转变为共同创始人</p>
+        </div>
+        
+        <div class="usp-grid">
+            <div class="usp-card">
+                <div class="usp-number">1</div>
+                <h3 class="usp-title">可成长型AI治理</h3>
+                <p class="usp-desc">AST的AI系统随着社区活跃度而进化。社区互动直接训练AI模型，使其对治理提案给出更精准建议，自动优化社区运营，成为DAO的"副大脑"。</p>
+            </div>
+            
+            <div class="usp-card">
+                <div class="usp-number">2</div>
+                <h3 class="usp-title">真实效用的代币经济</h3>
+                <p class="usp-desc">AST不是情绪币或Meme币，而是支撑整个生态系统的实用代币。用于AI服务访问、治理参与、贡献奖励、生态项目启动和数据权益。</p>
+            </div>
+            
+            <div class="usp-card">
+                <div class="usp-number">3</div>
+                <h3 class="usp-title">AI自主管理DAO金库</h3>
+                <p class="usp-desc">AI根据风险、回报和社区需求提供最优的金库分配策略。社区投票是最终确认而非从零提案，使DAO更智能、抗操纵且高效。</p>
+            </div>
+            
+            <div class="usp-card">
+                <div class="usp-number">4</div>
+                <h3 class="usp-title">贡献导向的权益系统</h3>
+                <p class="usp-desc">社区贡献者获得更高的治理权重、AI优先级、早期模型访问权和增强的代币奖励。形成贡献→AI学习→项目增长→代币升值→收益的飞轮效应。</p>
+            </div>
+            
+            <div class="usp-card">
+                <div class="usp-number">5</div>
+                <h3 class="usp-title">内置价值增长机制</h3>
+                <p class="usp-desc">AST价值不依赖KOL或市场操纵，而是基于AI服务消耗、真实社区增长、DAO金库扩张、治理透明度和生态扩展的有机增长。</p>
+            </div>
+            
+            <div class="usp-card">
+                <div class="usp-number">6</div>
+                <h3 class="usp-title">AI作为共同创始人</h3>
+                <p class="usp-desc">AST是首个将AI作为共同创始人的Web3社区。AI拥有决策建议权、资源管理权、治理协助和经济增长指导能力。</p>
+            </div>
+        </div>
     </section>
 
     <section id="tokenomics" class="section">
-      <h3 style="color:var(--accent)">代币经济</h3>
-      <ul style="color:var(--muted)">
-        <li>总供应量: 1,000,000,000 AST</li>
-        <li>AI训练奖励: 40%</li>
-        <li>生态系统发展: 25%</li>
-      </ul>
+        <div class="section-header">
+            <h2 class="section-title">代币经济</h2>
+            <p class="section-subtitle">无需发售的成长型治理代币 - 通过贡献获得，确保公平和有机采用</p>
+        </div>
+        
+        <div class="tokenomics-container">
+            <div class="tokenomics-info">
+                <div class="token-card">
+                    <h4>代币分配</h4>
+                    <ul class="token-list">
+                        <li><span>AI训练奖励</span> <span class="token-value">40%</span></li>
+                        <li><span>生态系统发展</span> <span class="token-value">25%</span></li>
+                        <li><span>团队与顾问</span> <span class="token-value">15%</span></li>
+                        <li><span>社区与市场</span> <span class="token-value">10%</span></li>
+                        <li><span>流动性池</span> <span class="token-value">10%</span></li>
+                        <li><span>总供应量</span> <span class="token-value">1,000,000,000 AST</span></li>
+                    </ul>
+                </div>
+                
+                <div class="token-card">
+                    <h4>代币用途</h4>
+                    <ul class="token-list">
+                        <li><span>AI服务使用费</span> <span class="token-value">消耗机制</span></li>
+                        <li><span>治理参与权</span> <span class="token-value">质押要求</span></li>
+                        <li><span>贡献奖励</span> <span class="token-value">激励分配</span></li>
+                        <li><span>生态项目启动</span> <span class="token-value">权益证明</span></li>
+                        <li><span>数据访问权</span> <span class="token-value">权限控制</span></li>
+                        <li><span>DAO金库收益</span> <span class="token-value">价值共享</span></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="chart-placeholder">
+                代币分配图表可视化<br>
+                (将使用Chart.js实现)
+            </div>
+        </div>
     </section>
-  </div>
 
-  <!-- CHAT WIDGET -->
-  <div id="origin-core-chat" role="region" aria-label="AST chat widget">
-    <div class="oc-header">
-      <h4>AST Origin Core</h4>
-      <div>
-        <button id="oc-minimize" aria-label="minimize">−</button>
-      </div>
-    </div>
-
-    <div id="oc-messages" aria-live="polite"></div>
-
-    <div class="oc-input-box">
-      <input id="oc-input" type="text" placeholder="询问关于AST代币..." aria-label="chat input" />
-      <button id="oc-send">发送</button>
-    </div>
-  </div>
-
-  <!-- ADMIN PANEL -->
-  <div id="admin-panel" aria-hidden="true">
-    <div class="admin-card" role="dialog" aria-modal="true">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h2 style="margin:0;color:var(--accent)">AST 管理面板</h2>
-        <div>
-          <span id="currentTime" style="color:var(--muted);margin-right:12px"></span>
-          <button id="adminClose" class="btn ghost">关闭</button>
+    <section id="roadmap" class="section">
+        <div class="section-header">
+            <h2 class="section-title">发展路线</h2>
+            <p class="section-subtitle">构建世界首个AI驱动的去中心化自治社会的战略路径</p>
         </div>
-      </div>
-
-      <div style="margin-top:18px">
-        <p style="color:var(--muted)">（管理操作为示例 —— 实际上线请通过后端验证 & 权限控制）</p>
-        <div style="display:flex;gap:12px;margin-top:12px">
-          <button class="btn primary" id="issueBtn">模拟发行代币</button>
-          <button class="btn primary" id="airdropBtn">模拟空投</button>
-          <button class="btn ghost" id="burnBtn">模拟销毁</button>
+        
+        <div class="roadmap-container">
+            <div class="roadmap-line"></div>
+            <div class="roadmap-items">
+                <div class="roadmap-item">
+                    <div class="roadmap-marker">1</div>
+                    <div class="roadmap-content">
+                        <div class="roadmap-phase">第一阶段：基础建设</div>
+                        <div class="roadmap-title">测试网启动与社区构建</div>
+                        <div class="roadmap-desc">部署测试网代币，建立核心社区，开发基础AI治理模块，创建文档和开发者资源。</div>
+                    </div>
+                </div>
+                
+                <div class="roadmap-item">
+                    <div class="roadmap-marker">2</div>
+                    <div class="roadmap-content">
+                        <div class="roadmap-phase">第二阶段：AI集成</div>
+                        <div class="roadmap-title">AI代理SDK与训练系统</div>
+                        <div class="roadmap-desc">发布AI代理开发工具包，实施训练奖励机制，启动第一个社区驱动的AI模型训练周期。</div>
+                    </div>
+                </div>
+                
+                <div class="roadmap-item">
+                    <div class="roadmap-marker">3</div>
+                    <div class="roadmap-content">
+                        <div class="roadmap-phase">第三阶段：主网部署</div>
+                        <div class="roadmap-title">全面功能上线与生态扩展</div>
+                        <div class="roadmap-desc">主网代币部署，完整AI治理系统上线，DAO金库AI管理启动，与AI项目建立合作伙伴关系。</div>
+                    </div>
+                </div>
+                
+                <div class="roadmap-item">
+                    <div class="roadmap-marker">4</div>
+                    <div class="roadmap-content">
+                        <div class="roadmap-phase">第四阶段：自治进化</div>
+                        <div class="roadmap-title">完全去中心化与AI自主治理</div>
+                        <div class="roadmap-desc">实现完全去中心化治理，AI自主优化经济模型，生态系统自我维持，成为Web3 AI治理的黄金标准。</div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
+    </section>
 
-<script>
-(() => {
-  /* ---------- Utilities ---------- */
-  const $ = sel => document.querySelector(sel);
-  const $$ = sel => Array.from(document.querySelectorAll(sel));
+    <section id="community" class="section">
+        <div class="section-header">
+            <h2 class="section-title">加入社区</h2>
+            <p class="section-subtitle">成为塑造AI驱动去中心化未来的一部分</p>
+        </div>
+        
+        <div class="community-stats">
+            <div class="stat-card">
+                <div class="stat-value">24.5K</div>
+                <div class="stat-label">社区成员</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3.2K</div>
+                <div class="stat-label">活跃贡献者</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">156</div>
+                <div class="stat-label">代表国家</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">98.7%</div>
+                <div class="stat-label">AI响应准确率</div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem;">
+            <p style="font-size: 1.2rem; color: var(--text-light); margin-bottom: 2rem;">
+                准备好参与构建下一代AI治理生态系统了吗？
+            </p>
+            <div class="cta" style="justify-content: center;">
+                <a class="btn primary" href="#">加入Discord</a>
+                <a class="btn accent" href="#">关注Twitter</a>
+                <a class="btn outline" href="#">阅读文档</a>
+            </div>
+        </div>
+    </section>
 
-  /* ---------- Admin Panel ---------- */
-  const adminPanel = $('#admin-panel');
-  const adminCloseBtn = $('#adminClose');
-  const openAdminFromCard = $('#open-admin-from-card');
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#usp">核心优势</a>
+            <a href="#tokenomics">代币经济</a>
+            <a href="#roadmap">发展路线</a>
+            <a href="#community">社区</a>
+            <a href="#">文档</a>
+            <a href="#">隐私政策</a>
+        </div>
+        <div class="copyright">
+            © <span id="year"></span> AST — 世界首个成长驱动型AI治理加密社区。保留所有权利。
+        </div>
+    </footer>
 
-  function openAdminPanel() {
-    if (!adminPanel) return;
-    adminPanel.style.display = 'flex';
-    adminPanel.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-    updateAdminTime();
-  }
-  function closeAdminPanel() {
-    if (!adminPanel) return;
-    adminPanel.style.display = 'none';
-    adminPanel.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
-  if (adminCloseBtn) adminCloseBtn.addEventListener('click', closeAdminPanel);
-  if (openAdminFromCard) openAdminFromCard.addEventListener('click', openAdminPanel);
-
-  // keyboard shortcuts
-  document.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'a') { e.preventDefault(); openAdminPanel(); }
-    if (e.key === 'Escape') { closeAdminPanel(); toggleMinimize(false); }
-  });
-
-  function updateAdminTime() {
-    const el = document.getElementById('currentTime');
-    if (!el) return;
-    el.textContent = new Date().toLocaleString('zh-CN');
-  }
-  setInterval(updateAdminTime, 1000);
-
-  /* ---------- Chat widget ---------- */
-  class OriginCoreChat {
-    constructor() {
-      this.container = $('#origin-core-chat');
-      this.messagesEl = $('#oc-messages');
-      this.input = $('#oc-input');
-      this.sendBtn = $('#oc-send');
-      this.minBtn = $('#oc-minimize');
-      this.typingEl = null;
-      this.init();
-    }
-
-    init() {
-      if (this.sendBtn) this.sendBtn.addEventListener('click', () => this.handleSend());
-      if (this.input) this.input.addEventListener('keypress', (e) => { if (e.key === 'Enter') this.handleSend(); });
-      if (this.minBtn) this.minBtn.addEventListener('click', () => this.toggleMinimize());
-      // welcome message
-      setTimeout(() => this.addMessage('Origin Core', 'AST Origin Core 已在线。请问您需要什么帮助？', 'bot-message'), 900);
-    }
-
-    toggleMinimize(forceClose){
-      const el = this.container;
-      if (!el) return;
-      if (forceClose === false) { el.classList.add('chat-minimized'); this.minBtn.textContent = '+'; return; }
-      el.classList.toggle('chat-minimized');
-      this.minBtn.textContent = el.classList.contains('chat-minimized') ? '+' : '−';
-    }
-
-    addMessage(sender, content, cls='bot-message'){
-      const wrap = document.createElement('div');
-      wrap.className = 'message ' + cls;
-      const sEl = document.createElement('div'); sEl.className = 'message-sender'; sEl.textContent = sender + ':';
-      const cEl = document.createElement('div'); cEl.className = 'message-content'; cEl.textContent = content;
-      wrap.appendChild(sEl); wrap.appendChild(cEl);
-      if (this.messagesEl) {
-        this.messagesEl.appendChild(wrap);
-        this.messagesEl.scrollTop = this.messagesEl.scrollHeight;
-      }
-    }
-
-    showTyping(){
-      if (!this.messagesEl) return;
-      if (this.typingEl) return;
-      const el = document.createElement('div');
-      el.id = 'typing-indicator';
-      el.className = 'typing-indicator';
-      el.innerHTML = 'Origin Core 正在输入 <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
-      this.typingEl = el;
-      this.messagesEl.appendChild(el);
-      this.messagesEl.scrollTop = this.messagesEl.scrollHeight;
-    }
-
-    hideTyping(){
-      if (!this.typingEl) return;
-      this.typingEl.remove();
-      this.typingEl = null;
-    }
-
-    sanitizeInput(txt){
-      // basic sanitize (strip invisible)
-      return txt.replace(/\s+/g,' ').trim();
-    }
-
-    async handleSend(){
-      const raw = this.input.value || '';
-      const message = this.sanitizeInput(raw);
-      if (!message) return;
-      this.input.value = '';
-      this.addMessage('您', message, 'user-message');
-
-      // special admin command (local demo)
-      if (message === 'AST-Origin-Core:Awaken') {
-        this.addMessage('Origin Core', '系统管理员权限已激活。正在打开管理面板...', 'bot-message');
-        openAdminPanel();
-        return;
-      }
-
-      // call real AI endpoint
-      this.showTyping();
-      this.sendBtn.disabled = true;
-      try {
-        const reply = await sendToAI(message);
-        this.hideTyping();
-        this.addMessage('Origin Core', reply, 'bot-message');
-      } catch (err) {
-        this.hideTyping();
-        console.error(err);
-        this.addMessage('Origin Core', '抱歉，AI 服务暂时不可用。', 'bot-message');
-      } finally {
-        this.sendBtn.disabled = false;
-        this.input.focus();
-      }
-    }
-  }
-
-  const chat = new OriginCoreChat();
-
-  /* ---------- Front -> Backend AI call ---------- */
-  async function sendToAI(userMsg){
-    // endpoint: /api/chat (see server.js below)
-    const res = await fetch('/api/chat', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ message: userMsg })
-    });
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error('AI API error: ' + (txt || res.status));
-    }
-    const json = await res.json();
-    // Expect { reply: "..." }
-    return json.reply || '抱歉，未收到回应。';
-  }
-
-  /* ---------- Admin action placeholders (demo) ---------- */
-  $('#issueBtn')?.addEventListener('click', () => alert('模拟：发行代币（仅演示，实际请调用后端并验证权限）'));
-  $('#airdropBtn')?.addEventListener('click', () => alert('模拟：空投代币（仅演示）'));
-  $('#burnBtn')?.addEventListener('click', () => {
-    if (confirm('确认销毁示例代币？（模拟）')) alert('已模拟销毁。');
-  });
-
-  // set year for any footer (if exists)
-  const yearSpan = document.getElementById('year');
-  if (yearSpan) yearSpan.textContent = new Date().getFullYear();
-
-  // optional: check ?admin=true in URL
-  (function checkAdminParam(){ try{ const url = new URL(location.href); if (url.searchParams.get('admin') === 'true') openAdminPanel(); }catch(e){} })();
-
-})();
-</script>
+    <script>
+        // 设置年份
+        document.getElementById("year").textContent = new Date().getFullYear();
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.style.background = 'rgba(15, 15, 35, 0.98)';
+                navbar.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.2)';
+            } else {
+                navbar.style.background = 'rgba(15, 15, 35, 0.95)';
+                navbar.style.boxShadow = 'none';
+            }
+        });
+        
+        // 卡片动画观察器
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // 观察所有usp卡片和路线图项目
+        document.querySelectorAll('.usp-card, .roadmap-content, .stat-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
 </body>
 </html>
