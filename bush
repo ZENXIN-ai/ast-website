@@ -1,6 +1,0 @@
-# 生成新的SSH密钥对（专用于这个项目）
-ssh-keygen -t ed25519 -C "astra-ai-bot@your-email.com" -f ~/.ssh/astra_deploy
-
-# 这会生成两个文件：
-# - astra_deploy (私钥，保密！)
-# - astra_deploy.pub (公钥，可公开)
