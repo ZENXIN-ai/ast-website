@@ -1,1428 +1,348 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AST — 去中心化AI代币</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* ===== 全局样式 ===== */
-        :root {
-            --primary: #5b5bff;
-            --primary-dark: #4a4ae6;
-            --primary-light: #7b7bff;
-            --secondary: #1a1a2e;
-            --secondary-light: #2a2a3e;
-            --accent: #00d4ff;
-            --accent-dark: #00b8e6;
-            --text: #f0f0f0;
-            --text-light: #b0b0b0;
-            --text-lighter: #888;
-            --card-bg: rgba(30, 30, 46, 0.7);
-            --card-bg-solid: #1e1e2e;
-            --card-border: rgba(255, 255, 255, 0.1);
-            --success: #00d26a;
-            --warning: #ff9f43;
-            --danger: #ff6b6b;
-            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-            --gradient-dark: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.3);
-            --radius: 12px;
-            --radius-sm: 8px;
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        body {
-            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            background: var(--gradient-dark);
-            color: var(--text);
-            line-height: 1.6;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-        
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-        
-        /* ===== 主网站样式 ===== */
-        
-        /* 导航栏 */
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 2rem;
-            position: sticky;
-            top: 0;
-            background: rgba(10, 10, 20, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            z-index: 100;
-            border-bottom: 1px solid var(--card-border);
-        }
-        
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .logo {
-            height: 40px;
-            width: 40px;
-            border-radius: 10px;
-            background: var(--gradient-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            box-shadow: var(--shadow);
-        }
-        
-        .brand-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        
-        .brand-sub {
-            font-size: 0.8rem;
-            color: var(--text-light);
-        }
-        
-        .nav {
-            display: flex;
-            gap: 2rem;
-        }
-        
-        .nav a {
-            color: var(--text);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-            position: relative;
-        }
-        
-        .nav a:hover {
-            color: var(--accent);
-        }
-        
-        .nav a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--accent);
-            transition: width 0.3s;
-        }
-        
-        .nav a:hover::after {
-            width: 100%;
-        }
-        
-        /* 英雄区域 */
-        .hero {
-            display: flex;
-            padding: 6rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            gap: 3rem;
-            align-items: center;
-            min-height: 80vh;
-        }
-        
-        .hero-left {
-            flex: 1;
-        }
-        
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            line-height: 1.2;
-        }
-        
-        .lead {
-            font-size: 1.3rem;
-            color: var(--text-light);
-            margin-bottom: 2.5rem;
-            line-height: 1.6;
-        }
-        
-        .cta {
-            display: flex;
-            gap: 1rem;
-        }
-        
-        .btn {
-            padding: 0.8rem 1.5rem;
-            border-radius: var(--radius-sm);
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition);
-            display: inline-block;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .btn.primary {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .btn.primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(91, 91, 255, 0.3);
-        }
-        
-        .btn.outline {
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            background: transparent;
-        }
-        
-        .btn.outline:hover {
-            background: rgba(91, 91, 255, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        .btn.small {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-        
-        .hero-right {
-            flex: 0 0 300px;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-lg);
-            transition: var(--transition);
-        }
-        
-        .hero-right:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        .hero-right h4 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            color: var(--accent);
-        }
-        
-        .hero-right dl {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .hero-right dt {
-            font-weight: 600;
-            color: var(--text-light);
-        }
-        
-        .hero-right dd {
-            color: var(--text);
-        }
-        
-        /* 内容区域 */
-        .section {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 3rem 2rem;
-        }
-        
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius);
-            padding: 2rem;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        h3 {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            color: var(--accent);
-        }
-        
-        p {
-            margin-bottom: 1rem;
-            color: var(--text-light);
-        }
-        
-        /* 代币经济学 */
-        .token-list {
-            list-style: none;
-        }
-        
-        .token-list li {
-            padding: 0.8rem 0;
-            border-bottom: 1px solid var(--card-border);
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .token-list li:last-child {
-            border-bottom: none;
-        }
-        
-        /* 路线图 */
-        ol {
-            list-style: none;
-            counter-reset: roadmap-counter;
-            padding-left: 0;
-        }
-        
-        ol li {
-            counter-increment: roadmap-counter;
-            padding: 1.5rem 0 1.5rem 3rem;
-            position: relative;
-            border-left: 2px solid var(--primary);
-        }
-        
-        ol li:before {
-            content: counter(roadmap-counter);
-            position: absolute;
-            left: -1rem;
-            top: 1.5rem;
-            width: 2rem;
-            height: 2rem;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-        
-        ol li:last-child {
-            border-left: 2px solid transparent;
-        }
-        
-        /* 联系方式 */
-        #contact a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-        
-        #contact a:hover {
-            text-decoration: underline;
-        }
-        
-        /* 页脚 */
-        .footer {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-light);
-            border-top: 1px solid var(--card-border);
-            margin-top: 2rem;
-        }
-        
-        /* ===== 聊天框样式 ===== */
-        #origin-core-chat {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 320px;
-            background: rgba(10, 10, 20, 0.95);
-            border: 1px solid rgba(124, 42, 232, 0.5);
-            padding: 0;
-            border-radius: var(--radius);
-            color: white;
-            font-family: 'Inter', sans-serif;
-            z-index: 1000;
-            box-shadow: var(--shadow-lg);
-            backdrop-filter: blur(10px);
-            overflow: hidden;
-        }
-        
-        .oc-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            background: rgba(124, 42, 232, 0.2);
-            border-bottom: 1px solid rgba(124, 42, 232, 0.3);
-        }
-        
-        .oc-header h4 {
-            margin: 0;
-            font-size: 16px;
-            color: #00C6FF;
-        }
-        
-        #oc-minimize {
-            background: transparent;
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-size: 18px;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-        }
-        
-        #oc-minimize:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        #oc-messages {
-            height: 260px;
-            overflow-y: auto;
-            padding: 10px;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        
-        #oc-messages .message {
-            margin-bottom: 12px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        #oc-messages .user-message {
-            background: rgba(0, 198, 255, 0.15);
-            margin-left: 20px;
-            border-left: 2px solid #00C6FF;
-        }
-        
-        #oc-messages .bot-message {
-            background: rgba(124, 42, 232, 0.15);
-            margin-right: 20px;
-            border-left: 2px solid #7C2AE8;
-        }
-        
-        .message-sender {
-            font-weight: bold;
-            margin-bottom: 4px;
-            font-size: 12px;
-            opacity: 0.8;
-        }
-        
-        .message-content {
-            word-wrap: break-word;
-        }
-        
-        .oc-input-box {
-            display: flex;
-            gap: 8px;
-            padding: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        #oc-input {
-            flex: 1;
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px solid rgba(124, 42, 232, 0.5);
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            outline: none;
-            font-size: 14px;
-        }
-        
-        #oc-input:focus {
-            border-color: #7C2AE8;
-        }
-        
-        #oc-send {
-            padding: 8px 16px;
-            border-radius: 6px;
-            background: linear-gradient(90deg, #00C6FF, #7C2AE8);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            transition: opacity 0.3s;
-        }
-        
-        #oc-send:hover {
-            opacity: 0.9;
-        }
-        
-        #oc-send:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 8px 12px;
-            color: rgba(255, 255, 255, 0.7);
-            font-style: italic;
-        }
-        
-        .typing-dot {
-            width: 6px;
-            height: 6px;
-            background: #7C2AE8;
-            border-radius: 50%;
-            animation: typingAnimation 1.4s infinite ease-in-out;
-        }
-        
-        .typing-dot:nth-child(1) {
-            animation-delay: 0s;
-        }
-        
-        .typing-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-        
-        .typing-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes typingAnimation {
-            0%, 60%, 100% { transform: scale(1); opacity: 0.5; }
-            30% { transform: scale(1.2); opacity: 1; }
-        }
-        
-        .chat-minimized #oc-messages,
-        .chat-minimized .oc-input-box {
-            display: none;
-        }
-        
-        .chat-minimized {
-            width: auto;
-            height: auto;
-        }
-        
-        .chat-minimized .oc-header {
-            border-bottom: none;
-        }
-        
-        /* ===== 管理面板样式 ===== */
-        #admin-panel {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 10, 20, 0.98);
-            z-index: 10000;
-            overflow-y: auto;
-            padding: 20px;
-        }
-        
-        .admin-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .admin-title {
-            font-size: 28px;
-            color: #00C6FF;
-        }
-        
-        .admin-close {
-            padding: 8px 16px;
-            border-radius: 6px;
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .admin-nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .admin-nav-btn {
-            padding: 10px 20px;
-            border-radius: 6px;
-            background: rgba(30, 30, 46, 0.7);
-            border: 1px solid rgba(124, 42, 232, 0.5);
-            color: #f0f0f0;
-            cursor: pointer;
-        }
-        
-        .admin-nav-btn.active {
-            background: #5b5bff;
-        }
-        
-        .admin-section {
-            display: none;
-        }
-        
-        .admin-section.active {
-            display: block;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background: rgba(30, 30, 46, 0.7);
-            border: 1px solid rgba(124, 42, 232, 0.3);
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            color: #b0b0b0;
-            font-size: 14px;
-        }
-        
-        .admin-card {
-            background: rgba(30, 30, 46, 0.7);
-            border: 1px solid rgba(124, 42, 232, 0.3);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .admin-card-title {
-            margin-bottom: 15px;
-            color: #00C6FF;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 5px;
-            color: #b0b0b0;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid rgba(124, 42, 232, 0.5);
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-        
-        .form-btn {
-            padding: 10px 20px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            margin-right: 10px;
-        }
-        
-        .btn-primary {
-            background: #5b5bff;
-            color: white;
-        }
-        
-        .btn-success {
-            background: #00d26a;
-            color: white;
-        }
-        
-        .btn-danger {
-            background: #ff6b6b;
-            color: white;
-        }
-        
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        
-        .data-table th, .data-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .data-table th {
-            color: #00C6FF;
-            font-weight: 600;
-        }
-        
-        .chart-placeholder {
-            height: 300px;
-            background: rgba(30, 30, 46, 0.5);
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #b0b0b0;
-        }
-        
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .nav {
-                gap: 1rem;
-            }
-            
-            .hero {
-                flex-direction: column;
-                padding: 2rem 1rem;
-            }
-            
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            .cta {
-                flex-direction: column;
-            }
-            
-            .hero-right {
-                width: 100%;
-            }
-            
-            .section {
-                padding: 2rem 1rem;
-            }
-            
-            #origin-core-chat {
-                width: calc(100% - 40px);
-                right: 20px;
-            }
-            
-            .admin-nav {
-                flex-direction: column;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .admin-header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AST — 去中心化AI代币</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* 精简 + 升级的主题变量 */
+  :root{
+    --bg-main:#060712;
+    --bg-grad: linear-gradient(135deg,#0b0f1a 0%, #0f1724 100%);
+    --card:#0f1620cc;
+    --glass: rgba(255,255,255,0.03);
+    --accent:#00f6ff;
+    --neon-grad: linear-gradient(90deg,#00f6ff,#4df1ff,#dffaff);
+    --text:#e8eef6;
+    --muted: rgba(232,238,246,0.6);
+    --radius:12px;
+    --transition: all .22s cubic-bezier(.2,.9,.3,1);
+  }
+
+  html,body{height:100%;margin:0;font-family:Inter, "PingFang SC", "Microsoft YaHei", sans-serif;background:var(--bg-grad);color:var(--text);-webkit-font-smoothing:antialiased;}
+
+  /* container */
+  .wrap{max-width:1200px;margin:0 auto;padding:28px;}
+
+  header.navbar{display:flex;align-items:center;justify-content:space-between;padding:18px;border-radius:10px;}
+  .brand{display:flex;gap:14px;align-items:center}
+  .logo{width:48px;height:48px;border-radius:10px;background:var(--neon-grad);display:flex;align-items:center;justify-content:center;color:#001; font-weight:700;box-shadow:0 8px 30px rgba(0,246,255,0.06)}
+  .brand-title{font-size:20px;color:var(--accent);font-weight:700}
+  .nav{display:flex;gap:18px;align-items:center}
+  .nav a{color:var(--muted);text-decoration:none;font-weight:500}
+  .nav a:hover{color:var(--accent)}
+
+  .hero{display:flex;gap:28px;align-items:center;margin-top:18px}
+  .hero-left{flex:1}
+  h1{font-size:44px;margin:0 0 12px 0;background:var(--neon-grad);-webkit-background-clip:text;color:transparent;font-weight:800;line-height:1.05}
+  .lead{color:var(--muted);font-size:16px;margin-bottom:18px}
+
+  .cta{display:flex;gap:12px}
+  .btn{padding:10px 16px;border-radius:10px;border:none;cursor:pointer;font-weight:700;transition:var(--transition)}
+  .btn.primary{background:linear-gradient(90deg,#5b5bff,#00d4ff);color:#001}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+  /* right card */
+  .hero-right{width:320px;background:var(--card);border-radius:14px;padding:18px;box-shadow:0 12px 30px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.03)}
+  .hero-right dl{display:grid;grid-template-columns:1fr 1fr;gap:6px;color:var(--muted)}
+
+  /* sections */
+  .section{margin-top:22px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.02);}
+
+  /* CHAT UI */
+  #origin-core-chat{
+    position:fixed;right:20px;bottom:20px;width:360px;border-radius:14px;background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter: blur(8px);
+    border:1px solid rgba(0,246,255,0.06);box-shadow:0 30px 60px rgba(2,6,23,0.6);overflow:hidden;z-index:1000;
+  }
+  .oc-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.02)}
+  .oc-header h4{margin:0;color:var(--accent);font-size:14px}
+  #oc-messages{height:320px;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+  .message{max-width:78%;padding:10px 12px;border-radius:12px;line-height:1.35;word-break:break-word;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+  .user-message{margin-left:auto;background:linear-gradient(180deg,#06121a,#07202a);border:1px solid rgba(0,198,255,0.06)}
+  .bot-message{margin-right:auto;background:linear-gradient(180deg,#0d1230,#0b1530);border:1px solid rgba(124,42,232,0.06)}
+  .message-sender{font-size:11px;color:var(--muted);margin-bottom:6px}
+  .oc-input-box{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(255,255,255,0.02)}
+  #oc-input{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);outline:none}
+  #oc-send{padding:10px 12px;border-radius:10px;background:linear-gradient(90deg,#00f6ff,#7c2ae8);border:none;color:#001;font-weight:700;cursor:pointer}
+
+  .typing-indicator{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px}
+  .typing-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:.6;animation:typing 1.2s infinite;}
+
+  @keyframes typing{0%{transform:scale(1);opacity:.4}50%{transform:scale(1.3);opacity:1}100%{transform:scale(1);opacity:.4}}
+
+  /* admin panel (overlay) */
+  #admin-panel{display:none;position:fixed;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.7));z-index:2000;align-items:center;justify-content:center;padding:28px}
+  .admin-card{max-width:1000px;width:100%;background:rgba(255,255,255,0.02);border-radius:14px;padding:26px;border:1px solid rgba(0,246,255,0.05);box-shadow:0 30px 80px rgba(0,0,0,0.6)}
+
+  /* responsive */
+  @media (max-width:900px){.hero{flex-direction:column}.hero-right{width:100%}}
+  @media (max-width:480px){#origin-core-chat{width:calc(100% - 32px);right:16px;bottom:16px}}
+</style>
 </head>
-
 <body>
-    <!-- 主网站内容 -->
+  <div class="wrap">
     <header class="navbar">
-        <div class="nav-left">
-            <div class="logo">AST</div>
-            <div class="brand">
-                <div class="brand-title">AST</div>
-                <div class="brand-sub">去中心化AI代币</div>
-            </div>
+      <div class="brand">
+        <div class="logo">AST</div>
+        <div>
+          <div class="brand-title">AST</div>
+          <div class="brand-sub" style="color:var(--muted);font-size:13px">去中心化AI代币</div>
         </div>
-
-        <nav class="nav">
-            <a href="#about">关于</a>
-            <a href="#tokenomics">代币经济</a>
-            <a href="#roadmap">路线图</a>
-            <a href="#contact">联系我们</a>
-        </nav>
+      </div>
+      <nav class="nav">
+        <a href="#about">关于</a>
+        <a href="#tokenomics">代币经济</a>
+        <a href="#roadmap">路线图</a>
+        <a href="#contact">联系我们</a>
+      </nav>
     </header>
 
     <section class="hero">
-        <div class="hero-left">
-            <h1>AI奖励的未来</h1>
-            <p class="lead">
-                训练您的AI。赚取AST。<br>
-                一个为奖励智能代理进化而构建的去中心化代币。
-            </p>
-
-            <div class="cta">
-                <a class="btn primary" href="#tokenomics">查看代币经济</a>
-                <a class="btn outline" href="#roadmap">查看路线图</a>
-            </div>
+      <div class="hero-left">
+        <h1>AI奖励的未来</h1>
+        <p class="lead">训练您的AI。赚取AST。一个为奖励智能代理进化而构建的去中心化代币。</p>
+        <div class="cta">
+          <a class="btn primary" href="#tokenomics">查看代币经济</a>
+          <a class="btn ghost" href="#roadmap">查看路线图</a>
         </div>
+      </div>
 
-        <div class="hero-right card">
-            <h4>AST 快速信息</h4>
-            <dl>
-                <dt>网络</dt><dd>Base Sepolia (测试网)</dd>
-                <dt>符号</dt><dd>AST</dd>
-                <dt>总供应量</dt><dd>1,000,000,000</dd>
-            </dl>
-            <a class="btn small outline" href="#">查看合约</a>
+      <aside class="hero-right">
+        <h4 style="margin:0 0 8px 0;color:var(--accent)">AST 快速信息</h4>
+        <dl>
+          <dt style="color:var(--muted)">网络</dt><dd>Base Sepolia (测试网)</dd>
+          <dt style="color:var(--muted)">符号</dt><dd>AST</dd>
+          <dt style="color:var(--muted)">总供应量</dt><dd>1,000,000,000</dd>
+        </dl>
+        <div style="margin-top:12px">
+          <button class="btn ghost" id="open-admin-from-card">管理员</button>
         </div>
+      </aside>
     </section>
 
-    <section id="about" class="section card">
-        <h3>什么是AST?</h3>
-        <p>
-            AST是一个面向自主代理、数据训练师、模型贡献者和下一代AI生态系统的去中心化AI实用代币。
-        </p>
-        <p>
-            我们的使命是创建一个可持续的经济体系，让AI开发者和贡献者在推进人工智能方面获得公平的回报。
-        </p>
+    <section id="about" class="section"><h3 style="margin-top:0;color:var(--accent)">什么是AST?</h3>
+      <p style="color:var(--muted)">AST是一个面向自主代理、数据训练师、模型贡献者和下一代AI生态系统的去中心化AI实用代币。</p>
     </section>
 
-    <section id="tokenomics" class="section card">
-        <h3>代币经济</h3>
-        <ul class="token-list">
-            <li><strong>总供应量:</strong> 1,000,000,000 AST</li>
-            <li><strong>初始分配:</strong> 所有者 100% (测试网)</li>
-            <li><strong>AI训练奖励:</strong> 40%</li>
-            <li><strong>生态系统发展:</strong> 25%</li>
-            <li><strong>团队与顾问:</strong> 15%</li>
-            <li><strong>社区与市场:</strong> 10%</li>
-            <li><strong>流动性池:</strong> 10%</li>
-        </ul>
+    <section id="tokenomics" class="section">
+      <h3 style="color:var(--accent)">代币经济</h3>
+      <ul style="color:var(--muted)">
+        <li>总供应量: 1,000,000,000 AST</li>
+        <li>AI训练奖励: 40%</li>
+        <li>生态系统发展: 25%</li>
+      </ul>
     </section>
+  </div>
 
-    <section id="roadmap" class="section card">
-        <h3>路线图</h3>
-        <ol>
-            <li>测试网代币发布</li>
-            <li>网站 + 文档</li>
-            <li>AI代理SDK</li>
-            <li>AI训练奖励系统</li>
-            <li>主网部署</li>
-            <li>与AI项目合作</li>
-            <li>治理实施</li>
-        </ol>
-    </section>
-
-    <section id="contact" class="section card">
-        <h3>联系我们</h3>
-        <p>Twitter / Discord / Telegram (即将推出)</p>
-        <p>邮箱: <a href="mailto:team@ast.com">team@ast.com</a></p>
-    </section>
-
-    <footer class="footer">
-        © <span id="year"></span> AST — 去中心化AI代币
-    </footer>
-
-    <!-- 聊天框 -->
-    <div id="origin-core-chat">
-        <div class="oc-header">
-            <h4>AST Origin Core</h4>
-            <button id="oc-minimize">−</button>
-        </div>
-        <div id="oc-messages"></div>
-        <div class="oc-input-box">
-            <input id="oc-input" type="text" placeholder="询问关于AST代币..." />
-            <button id="oc-send">发送</button>
-        </div>
+  <!-- CHAT WIDGET -->
+  <div id="origin-core-chat" role="region" aria-label="AST chat widget">
+    <div class="oc-header">
+      <h4>AST Origin Core</h4>
+      <div>
+        <button id="oc-minimize" aria-label="minimize">−</button>
+      </div>
     </div>
 
-    <!-- 管理面板 -->
-    <div id="admin-panel">
-        <div class="admin-container">
-            <div class="admin-header">
-                <h1 class="admin-title">AST 管理面板</h1>
-                <div id="currentTime">加载中...</div>
-                <button class="admin-close" id="adminClose">关闭管理面板</button>
-            </div>
-            
-            <div class="admin-nav">
-                <button class="admin-nav-btn active" data-section="overview">概览</button>
-                <button class="admin-nav-btn" data-section="tokenManagement">代币管理</button>
-                <button class="admin-nav-btn" data-section="aiAnalytics">AI分析</button>
-                <button class="admin-nav-btn" data-section="communityData">社区数据</button>
-            </div>
-            
-            <!-- 概览部分 -->
-            <div id="overview" class="admin-section active">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value">1,234</div>
-                        <div class="stat-label">活跃用户</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">567,890</div>
-                        <div class="stat-label">已分发AST代币</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">45.6%</div>
-                        <div class="stat-label">用户增长(30天)</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">12.3M</div>
-                        <div class="stat-label">AST总供应量</div>
-                    </div>
-                </div>
-                
-                <div class="admin-card">
-                    <h3 class="admin-card-title">用户活动趋势</h3>
-                    <div class="chart-placeholder">
-                        用户活动图表 - 将使用Chart.js显示
-                    </div>
-                </div>
-                
-                <div class="admin-card">
-                    <h3 class="admin-card-title">AI系统洞察</h3>
-                    <div class="form-group">
-                        <p>分析显示实施新训练奖励系统后用户参与度增加了68%。</p>
-                        <p>当前空投机制显示92%的效率。</p>
-                        <p>检测到异常交易模式。建议监控大额钱包动向。</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 代币管理部分 -->
-            <div id="tokenManagement" class="admin-section">
-                <div class="admin-card">
-                    <h3 class="admin-card-title">发行新代币</h3>
-                    <div class="form-group">
-                        <label class="form-label">发行数量</label>
-                        <input type="number" class="form-input" id="issueAmount">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">接收地址</label>
-                        <input type="text" class="form-input" id="issueRecipient">
-                    </div>
-                    <button class="form-btn btn-primary" id="issueBtn">发行代币</button>
-                </div>
-                
-                <div class="admin-card">
-                    <h3 class="admin-card-title">空投代币</h3>
-                    <div class="form-group">
-                        <label class="form-label">每个用户数量</label>
-                        <input type="number" class="form-input" id="airdropAmount">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">接收者数量</label>
-                        <input type="number" class="form-input" id="airdropCount">
-                    </div>
-                    <button class="form-btn btn-success" id="airdropBtn">执行空投</button>
-                </div>
-                
-                <div class="admin-card">
-                    <h3 class="admin-card-title">销毁代币</h3>
-                    <div class="form-group">
-                        <label class="form-label">销毁数量</label>
-                        <input type="number" class="form-input" id="burnAmount">
-                    </div>
-                    <button class="form-btn btn-danger" id="burnBtn">销毁代币</button>
-                </div>
-                
-                <div class="admin-card">
-                    <h3 class="admin-card-title">代币供应分布</h3>
-                    <div class="chart-placeholder">
-                        代币分布图表 - 将使用Chart.js显示
-                    </div>
-                </div>
-            </div>
-            
-            <!-- AI分析部分 -->
-            <div id="aiAnalytics" class="admin-section">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value">98.7%</div>
-                        <div class="stat-label">AI响应准确率</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">3.2s</div>
-                        <div class="stat-label">平均响应时间</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">12,456</div>
-                        <div class="stat-label">每日交互次数</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">87%</div>
-                        <div class="stat-label">用户满意度</div>
-                    </div>
-                </div>
-                
-                <div class="admin-card">
-                    <h3 class="admin-card-title">AI学习进度</h3>
-                    <div class="chart-placeholder">
-                        AI学习图表 - 将使用Chart.js显示
-                    </div>
-                </div>
-                
-                <div class="admin-card">
-                    <h3 class="admin-card-title">用户查询类别</h3>
-                    <div class="chart-placeholder">
-                        查询类别图表 - 将使用Chart.js显示
-                    </div>
-                </div>
-                
-                <div class="admin-card">
-                    <h3 class="admin-card-title">AI自我评估</h3>
-                    <div class="form-group">
-                        <p>当前学习率: 0.87。训练数据质量: 92%。</p>
-                        <p>AI交互使用户留存率增加了34%。</p>
-                        <p>最有价值的功能: 个性化训练推荐。</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 社区数据部分 -->
-            <div id="communityData" class="admin-section">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value">24.5K</div>
-                        <div class="stat-label">社区成员总数</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">3.2K</div>
-                        <div class="stat-label">活跃贡献者</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">156</div>
-                        <div class="stat-label">代表国家</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">42%</div>
-                        <div class="stat-label">女性参与者</div>
-                    </div>
-                </div>
-                
-                <div class="admin-card">
-                    <h3 class="admin-card-title">社区增长</h3>
-                    <div class="chart-placeholder">
-                        社区增长图表 - 将使用Chart.js显示
-                    </div>
-                </div>
-                
-                <div class="admin-card">
-                    <h3 class="admin-card-title">顶级贡献者</h3>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>排名</th>
-                                <th>用户名</th>
-                                <th>贡献</th>
-                                <th>赚取代币</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>@AI_Trainer_Pro</td>
-                                <td>1,245</td>
-                                <td>12,450 AST</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>@DataWizard</td>
-                                <td>987</td>
-                                <td>9,870 AST</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>@ModelMaster</td>
-                                <td>856</td>
-                                <td>8,560 AST</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>@NeuralNinja</td>
-                                <td>723</td>
-                                <td>7,230 AST</td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>@AlgorithmAce</td>
-                                <td>689</td>
-                                <td>6,890 AST</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+    <div id="oc-messages" aria-live="polite"></div>
+
+    <div class="oc-input-box">
+      <input id="oc-input" type="text" placeholder="询问关于AST代币..." aria-label="chat input" />
+      <button id="oc-send">发送</button>
     </div>
+  </div>
 
-    <script// ===== 添加管理面板直接访问功能 =====
+  <!-- ADMIN PANEL -->
+  <div id="admin-panel" aria-hidden="true">
+    <div class="admin-card" role="dialog" aria-modal="true">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2 style="margin:0;color:var(--accent)">AST 管理面板</h2>
+        <div>
+          <span id="currentTime" style="color:var(--muted);margin-right:12px"></span>
+          <button id="adminClose" class="btn ghost">关闭</button>
+        </div>
+      </div>
 
-// 方法1：通过URL参数直接打开
-function checkAdminAccess() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('admin') === 'true') {
-        openAdminPanel();
-    }
-}
+      <div style="margin-top:18px">
+        <p style="color:var(--muted)">（管理操作为示例 —— 实际上线请通过后端验证 & 权限控制）</p>
+        <div style="display:flex;gap:12px;margin-top:12px">
+          <button class="btn primary" id="issueBtn">模拟发行代币</button>
+          <button class="btn primary" id="airdropBtn">模拟空投</button>
+          <button class="btn ghost" id="burnBtn">模拟销毁</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-// 方法2：添加键盘快捷键
-document.addEventListener('keydown', function(e) {
-    // Ctrl+Alt+A 打开管理面板
-    if (e.ctrlKey && e.altKey && e.key === 'a') {
-        e.preventDefault();
-        openAdminPanel();
-    }
-    
-    // ESC 关闭管理面板
-    if (e.key === 'Escape' && document.getElementById('admin-panel').style.display === 'block') {
-        closeAdminPanel();
-    }
-});
+<script>
+(() => {
+  /* ---------- Utilities ---------- */
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => Array.from(document.querySelectorAll(sel));
 
-// 方法3：在导航栏添加管理员入口（仅在开发环境）
-function addAdminNavItem() {
-    const nav = document.querySelector('.nav');
-    const adminLink = document.createElement('a');
-    adminLink.href = '#';
-    adminLink.innerHTML = '管理员';
-    adminLink.style.color = 'var(--accent)';
-    adminLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        openAdminPanel();
-    });
-    nav.appendChild(adminLink);
-}
+  /* ---------- Admin Panel ---------- */
+  const adminPanel = $('#admin-panel');
+  const adminCloseBtn = $('#adminClose');
+  const openAdminFromCard = $('#open-admin-from-card');
 
-// 统一的打开管理面板函数
-function openAdminPanel() {
-    document.getElementById('admin-panel').style.display = 'block';
+  function openAdminPanel() {
+    if (!adminPanel) return;
+    adminPanel.style.display = 'flex';
+    adminPanel.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
     updateAdminTime();
-    // 添加打开动画
-    document.getElementById('admin-panel').style.opacity = '0';
-    document.getElementById('admin-panel').style.transform = 'translateY(20px)';
-    
-    setTimeout(() => {
-        document.getElementById('admin-panel').style.opacity = '1';
-        document.getElementById('admin-panel').style.transform = 'translateY(0)';
-        document.getElementById('admin-panel').style.transition = 'all 0.3s ease';
-    }, 10);
-}
+  }
+  function closeAdminPanel() {
+    if (!adminPanel) return;
+    adminPanel.style.display = 'none';
+    adminPanel.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+  if (adminCloseBtn) adminCloseBtn.addEventListener('click', closeAdminPanel);
+  if (openAdminFromCard) openAdminFromCard.addEventListener('click', openAdminPanel);
 
-// 统一的关闭管理面板函数
-function closeAdminPanel() {
-    const panel = document.getElementById('admin-panel');
-    panel.style.opacity = '0';
-    panel.style.transform = 'translateY(20px)';
-    
-    setTimeout(() => {
-        panel.style.display = 'none';
-    }, 300);
-}
+  // keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'a') { e.preventDefault(); openAdminPanel(); }
+    if (e.key === 'Escape') { closeAdminPanel(); toggleMinimize(false); }
+  });
 
-// 更新原有的关闭按钮事件
-document.getElementById('adminClose').addEventListener('click', closeAdminPanel);>
-        // ===== 主网站功能 =====
-        
-        // 设置年份
-        document.getElementById("year").textContent = new Date().getFullYear();
-        
-        // ===== 聊天系统 =====
-        class OriginCoreChat {
-            constructor() {
-                this.isOnline = true; // AI默认激活，无需激活命令
-                this.messageHistory = [];
-                this.init();
-            }
+  function updateAdminTime() {
+    const el = document.getElementById('currentTime');
+    if (!el) return;
+    el.textContent = new Date().toLocaleString('zh-CN');
+  }
+  setInterval(updateAdminTime, 1000);
 
-            init() {
-                this.bindEvents();
-                
-                // 直接显示在线消息，无需激活
-                setTimeout(() => {
-                    this.addMessage("Origin Core", "AST Origin Core 已在线。请问您需要什么帮助？", "bot-message");
-                }, 1000);
-            }
+  /* ---------- Chat widget ---------- */
+  class OriginCoreChat {
+    constructor() {
+      this.container = $('#origin-core-chat');
+      this.messagesEl = $('#oc-messages');
+      this.input = $('#oc-input');
+      this.sendBtn = $('#oc-send');
+      this.minBtn = $('#oc-minimize');
+      this.typingEl = null;
+      this.init();
+    }
 
-            bindEvents() {
-                const sendButton = document.getElementById('oc-send');
-                const inputField = document.getElementById('oc-input');
-                const minimizeButton = document.getElementById('oc-minimize');
+    init() {
+      if (this.sendBtn) this.sendBtn.addEventListener('click', () => this.handleSend());
+      if (this.input) this.input.addEventListener('keypress', (e) => { if (e.key === 'Enter') this.handleSend(); });
+      if (this.minBtn) this.minBtn.addEventListener('click', () => this.toggleMinimize());
+      // welcome message
+      setTimeout(() => this.addMessage('Origin Core', 'AST Origin Core 已在线。请问您需要什么帮助？', 'bot-message'), 900);
+    }
 
-                if (sendButton) {
-                    sendButton.addEventListener('click', () => this.sendMessage());
-                }
+    toggleMinimize(forceClose){
+      const el = this.container;
+      if (!el) return;
+      if (forceClose === false) { el.classList.add('chat-minimized'); this.minBtn.textContent = '+'; return; }
+      el.classList.toggle('chat-minimized');
+      this.minBtn.textContent = el.classList.contains('chat-minimized') ? '+' : '−';
+    }
 
-                if (inputField) {
-                    inputField.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') {
-                            this.sendMessage();
-                        }
-                    });
-                }
+    addMessage(sender, content, cls='bot-message'){
+      const wrap = document.createElement('div');
+      wrap.className = 'message ' + cls;
+      const sEl = document.createElement('div'); sEl.className = 'message-sender'; sEl.textContent = sender + ':';
+      const cEl = document.createElement('div'); cEl.className = 'message-content'; cEl.textContent = content;
+      wrap.appendChild(sEl); wrap.appendChild(cEl);
+      if (this.messagesEl) {
+        this.messagesEl.appendChild(wrap);
+        this.messagesEl.scrollTop = this.messagesEl.scrollHeight;
+      }
+    }
 
-                if (minimizeButton) {
-                    minimizeButton.addEventListener('click', () => this.toggleMinimize());
-                }
-            }
+    showTyping(){
+      if (!this.messagesEl) return;
+      if (this.typingEl) return;
+      const el = document.createElement('div');
+      el.id = 'typing-indicator';
+      el.className = 'typing-indicator';
+      el.innerHTML = 'Origin Core 正在输入 <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+      this.typingEl = el;
+      this.messagesEl.appendChild(el);
+      this.messagesEl.scrollTop = this.messagesEl.scrollHeight;
+    }
 
-            async sendMessage() {
-                const inputField = document.getElementById('oc-input');
-                const sendButton = document.getElementById('oc-send');
-                const message = inputField.value.trim();
+    hideTyping(){
+      if (!this.typingEl) return;
+      this.typingEl.remove();
+      this.typingEl = null;
+    }
 
-                if (!message) return;
+    sanitizeInput(txt){
+      // basic sanitize (strip invisible)
+      return txt.replace(/\s+/g,' ').trim();
+    }
 
-                inputField.value = '';
-                sendButton.disabled = true;
+    async handleSend(){
+      const raw = this.input.value || '';
+      const message = this.sanitizeInput(raw);
+      if (!message) return;
+      this.input.value = '';
+      this.addMessage('您', message, 'user-message');
 
-                this.addMessage('您', message, 'user-message');
+      // special admin command (local demo)
+      if (message === 'AST-Origin-Core:Awaken') {
+        this.addMessage('Origin Core', '系统管理员权限已激活。正在打开管理面板...', 'bot-message');
+        openAdminPanel();
+        return;
+      }
 
-                // 检查是否为管理面板激活命令
-                if (message === "AST-Origin-Core:Awaken") {
-                    this.addMessage('Origin Core', '系统管理员权限已激活。正在打开管理面板...', 'bot-message');
-                    // 显示管理面板
-                    document.getElementById('admin-panel').style.display = 'block';
-                    updateAdminTime();
-                    sendButton.disabled = false;
-                    return;
-                }
+      // call real AI endpoint
+      this.showTyping();
+      this.sendBtn.disabled = true;
+      try {
+        const reply = await sendToAI(message);
+        this.hideTyping();
+        this.addMessage('Origin Core', reply, 'bot-message');
+      } catch (err) {
+        this.hideTyping();
+        console.error(err);
+        this.addMessage('Origin Core', '抱歉，AI 服务暂时不可用。', 'bot-message');
+      } finally {
+        this.sendBtn.disabled = false;
+        this.input.focus();
+      }
+    }
+  }
 
-                this.showTypingIndicator();
+  const chat = new OriginCoreChat();
 
-                setTimeout(() => {
-                    this.hideTypingIndicator();
-                    
-                    // 直接生成响应，无需检查是否在线
-                    const response = this.generateResponse(message);
-                    this.addMessage('Origin Core', response, 'bot-message');
-                    
-                    sendButton.disabled = false;
-                    inputField.focus();
-                }, 1000 + Math.random() * 1000);
-            }
+  /* ---------- Front -> Backend AI call ---------- */
+  async function sendToAI(userMsg){
+    // endpoint: /api/chat (see server.js below)
+    const res = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ message: userMsg })
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error('AI API error: ' + (txt || res.status));
+    }
+    const json = await res.json();
+    // Expect { reply: "..." }
+    return json.reply || '抱歉，未收到回应。';
+  }
 
-            generateResponse(message) {
-                const lowerMessage = message.toLowerCase();
-                
-                if (lowerMessage.includes('代币') || lowerMessage.includes('ast')) {
-                    return "AST是一个去中心化AI实用代币，旨在奖励AI训练和开发的贡献。总供应量为1,000,000,000个代币。";
-                }
-                
-                if (lowerMessage.includes('供应') || lowerMessage.includes('总量')) {
-                    return "AST代币的总供应量为1,000,000,000。测试网阶段的初始分配为100%归所有者所有。";
-                }
-                
-                if (lowerMessage.includes('网络') || lowerMessage.includes('区块链')) {
-                    return "AST目前部署在Base Sepolia测试网上。主网部署计划于2024年第四季度进行。";
-                }
-                
-                if (lowerMessage.includes('代币经济') || lowerMessage.includes('分配')) {
-                    return "代币分配: 40% AI训练奖励, 25% 生态系统发展, 15% 团队与顾问, 10% 社区与市场, 10% 流动性池。";
-                }
-                
-                if (lowerMessage.includes('路线图') || lowerMessage.includes('计划')) {
-                    return "路线图: 1) 测试网启动 2) 网站+文档 3) AI代理SDK 4) 训练奖励系统 5) 主网部署 6) 合作伙伴 7) 治理实施";
-                }
-                
-                if (lowerMessage.includes('训练') || lowerMessage.includes('ai') || lowerMessage.includes('模型')) {
-                    return "AST生态系统通过数据提供、模型验证和计算资源奖励用户对AI训练的贡献。";
-                }
-                
-                if (lowerMessage.includes('联系') || lowerMessage.includes('邮箱') || lowerMessage.includes('支持')) {
-                    return "联系AST团队: team@ast.com。社交媒体渠道(Twitter, Discord, Telegram)即将推出。";
-                }
-                
-                if (lowerMessage.includes('你好') || lowerMessage.includes('嗨') || lowerMessage.includes('您好')) {
-                    return "您好！我是AST Origin Core，您的AST去中心化AI代币生态系统指南。今天我能为您提供什么帮助？";
-                }
-                
-                const defaultResponses = [
-                    "我不太明白。您能重新表述关于AST代币的问题吗？",
-                    "我专门提供AST代币信息。尝试询问代币经济、路线图或AI训练奖励。",
-                    "有关AST的详细信息，请参阅我们的文档或向我询问有关代币的具体问题。",
-                    "我在这里帮助解决AST代币查询。您想了解我们去中心化AI生态系统的哪些方面？"
-                ];
-                
-                return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
-            }
+  /* ---------- Admin action placeholders (demo) ---------- */
+  $('#issueBtn')?.addEventListener('click', () => alert('模拟：发行代币（仅演示，实际请调用后端并验证权限）'));
+  $('#airdropBtn')?.addEventListener('click', () => alert('模拟：空投代币（仅演示）'));
+  $('#burnBtn')?.addEventListener('click', () => {
+    if (confirm('确认销毁示例代币？（模拟）')) alert('已模拟销毁。');
+  });
 
-            addMessage(sender, content, messageClass = '') {
-                const messagesContainer = document.getElementById('oc-messages');
-                
-                const messageElement = document.createElement('div');
-                messageElement.className = `message ${messageClass}`;
-                
-                const senderElement = document.createElement('div');
-                senderElement.className = 'message-sender';
-                senderElement.textContent = sender + ':';
-                
-                const contentElement = document.createElement('div');
-                contentElement.className = 'message-content';
-                contentElement.textContent = content;
-                
-                messageElement.appendChild(senderElement);
-                messageElement.appendChild(contentElement);
-                
-                messagesContainer.appendChild(messageElement);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                
-                this.messageHistory.push({ sender, content, timestamp: new Date() });
-            }
+  // set year for any footer (if exists)
+  const yearSpan = document.getElementById('year');
+  if (yearSpan) yearSpan.textContent = new Date().getFullYear();
 
-            showTypingIndicator() {
-                const messagesContainer = document.getElementById('oc-messages');
-                
-                const typingElement = document.createElement('div');
-                typingElement.id = 'typing-indicator';
-                typingElement.className = 'typing-indicator';
-                typingElement.innerHTML = `
-                    Origin Core 正在输入
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                `;
-                
-                messagesContainer.appendChild(typingElement);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
+  // optional: check ?admin=true in URL
+  (function checkAdminParam(){ try{ const url = new URL(location.href); if (url.searchParams.get('admin') === 'true') openAdminPanel(); }catch(e){} })();
 
-            hideTypingIndicator() {
-                const typingElement = document.getElementById('typing-indicator');
-                if (typingElement) {
-                    typingElement.remove();
-                }
-            }
-
-            toggleMinimize() {
-                const chatContainer = document.getElementById('origin-core-chat');
-                chatContainer.classList.toggle('chat-minimized');
-                
-                const minimizeButton = document.getElementById('oc-minimize');
-                if (chatContainer.classList.contains('chat-minimized')) {
-                    minimizeButton.textContent = '+';
-                } else {
-                    minimizeButton.textContent = '−';
-                }
-            }
-        }
-
-        // ===== 管理面板功能 =====
-        
-        // 关闭管理面板
-        document.getElementById('adminClose').addEventListener('click', function() {
-            document.getElementById('admin-panel').style.display = 'none';
-        });
-        
-        // 更新管理面板时间
-        function updateAdminTime() {
-            const now = new Date();
-            document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN');
-        }
-        
-        setInterval(updateAdminTime, 1000);
-        
-        // 管理面板导航
-        document.querySelectorAll('.admin-nav-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                document.querySelectorAll('.admin-nav-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                document.querySelectorAll('.admin-section').forEach(section => {
-                    section.classList.remove('active');
-                });
-                
-                this.classList.add('active');
-                const sectionId = this.getAttribute('data-section');
-                document.getElementById(sectionId).classList.add('active');
-            });
-        });
-        
-        // 代币管理功能
-        document.getElementById('issueBtn').addEventListener('click', function() {
-            const amount = document.getElementById('issueAmount').value;
-            const recipient = document.getElementById('issueRecipient').value;
-            
-            if (amount && recipient) {
-                alert(`向 ${recipient} 发行 ${amount} AST代币`);
-                // 这里应该是实际的代币发行逻辑
-            } else {
-                alert('请填写所有字段');
-            }
-        });
-        
-        document.getElementById('airdropBtn').addEventListener('click', function() {
-            const amount = document.getElementById('airdropAmount').value;
-            const count = document.getElementById('airdropCount').value;
-            
-            if (amount && count) {
-                alert(`向 ${count} 个用户执行空投，每个用户 ${amount} AST代币`);
-                // 这里应该是实际的空投逻辑
-            } else {
-                alert('请填写所有字段');
-            }
-        });
-        
-        document.getElementById('burnBtn').addEventListener('click', function() {
-            const amount = document.getElementById('burnAmount').value;
-            
-            if (amount) {
-                if (confirm(`您确定要销毁 ${amount} 个AST代币吗？此操作无法撤销。`)) {
-                    alert(`销毁 ${amount} 个AST代币`);
-                    // 这里应该是实际的代币销毁逻辑
-                }
-            } else {
-                alert('请输入数量');
-            }
-        });
-        
-        // 初始化聊天系统
-        document.addEventListener('DOMContentLoaded', () => {
-            window.originCoreChat = new OriginCoreChat();
-        });
-    </script>
+})();
+</script>
 </body>
 </html>
