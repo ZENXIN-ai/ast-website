@@ -1099,7 +1099,72 @@
         </div>
     </div>
 
-    <script>
+    <script// ===== 添加管理面板直接访问功能 =====
+
+// 方法1：通过URL参数直接打开
+function checkAdminAccess() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('admin') === 'true') {
+        openAdminPanel();
+    }
+}
+
+// 方法2：添加键盘快捷键
+document.addEventListener('keydown', function(e) {
+    // Ctrl+Alt+A 打开管理面板
+    if (e.ctrlKey && e.altKey && e.key === 'a') {
+        e.preventDefault();
+        openAdminPanel();
+    }
+    
+    // ESC 关闭管理面板
+    if (e.key === 'Escape' && document.getElementById('admin-panel').style.display === 'block') {
+        closeAdminPanel();
+    }
+});
+
+// 方法3：在导航栏添加管理员入口（仅在开发环境）
+function addAdminNavItem() {
+    const nav = document.querySelector('.nav');
+    const adminLink = document.createElement('a');
+    adminLink.href = '#';
+    adminLink.innerHTML = '管理员';
+    adminLink.style.color = 'var(--accent)';
+    adminLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        openAdminPanel();
+    });
+    nav.appendChild(adminLink);
+}
+
+// 统一的打开管理面板函数
+function openAdminPanel() {
+    document.getElementById('admin-panel').style.display = 'block';
+    updateAdminTime();
+    // 添加打开动画
+    document.getElementById('admin-panel').style.opacity = '0';
+    document.getElementById('admin-panel').style.transform = 'translateY(20px)';
+    
+    setTimeout(() => {
+        document.getElementById('admin-panel').style.opacity = '1';
+        document.getElementById('admin-panel').style.transform = 'translateY(0)';
+        document.getElementById('admin-panel').style.transition = 'all 0.3s ease';
+    }, 10);
+}
+
+// 统一的关闭管理面板函数
+function closeAdminPanel() {
+    const panel = document.getElementById('admin-panel');
+    panel.style.opacity = '0';
+    panel.style.transform = 'translateY(20px)';
+    
+    setTimeout(() => {
+        panel.style.display = 'none';
+    }, 300);
+}
+
+// 更新原有的关闭按钮事件
+document.getElementById('adminClose').addEventListener('click', closeAdminPanel);>
         // ===== 主网站功能 =====
         
         // 设置年份
